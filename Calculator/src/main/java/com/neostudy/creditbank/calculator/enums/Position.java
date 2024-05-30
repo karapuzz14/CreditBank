@@ -2,5 +2,5 @@ package com.neostudy.creditbank.calculator.enums;
 
 public enum Position
 {
-    Ordinary, LowerManager, MiddleManager, TopManager
+    ORDINARY, LOWER_MANAGER, MIDDLE_MANAGER, TOP_MANAGER
 }

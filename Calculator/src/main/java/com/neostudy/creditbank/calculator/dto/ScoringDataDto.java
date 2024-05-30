@@ -3,18 +3,13 @@ package com.neostudy.creditbank.calculator.dto;
 import com.neostudy.creditbank.calculator.enums.Gender;
 import com.neostudy.creditbank.calculator.enums.MaritalStatus;
 import jakarta.validation.constraints.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.UUID;
 
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @Data
 public class ScoringDataDto
 {
@@ -32,15 +27,19 @@ public class ScoringDataDto
     Gender gender;
     @Past(message="Дата рождения указана некорректно.")
     LocalDate birthdate;
-    @Pattern(regexp = "\\d{4}}", message = "Серия паспорта должна содержать 4 цифры.")
+    @Pattern(regexp = "\\d{4}", message = "Серия паспорта должна содержать 4 цифры.")
     String passportSeries;
-    @Pattern(regexp = "\\d{6}}", message = "Номер паспорта должен содержать 6 цифр.")
+    @Pattern(regexp = "\\d{6}", message = "Номер паспорта должен содержать 6 цифр.")
     String passportNumber;
+    @PastOrPresent
     LocalDate passportIssueDate;
+    @Pattern(regexp = "\\d{3}-\\d{3}", message = "Код подразделения состоит из 6 цифр в формате XXX-XXX.")
     String passportIssueBranch;
     MaritalStatus maritalStatus;
     Integer dependentAmount;
+    @NotNull
     EmploymentDto employmentDto;
+    @NotNull
     String accountNumber;
     Boolean isInsuranceEnabled;
     Boolean isSalaryClient;

@@ -11,7 +11,8 @@ public class AdviceController
 {
     @ExceptionHandler(LaterBirthdateException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public LaterBirthdateException onUserAlreadyExistException(LaterBirthdateException e) {
+    public LaterBirthdateException onLaterBirthdateException(LaterBirthdateException e) {
+        e.setMessage("Клиент не может быть младше 18 лет.");
         return e;
     }
 }

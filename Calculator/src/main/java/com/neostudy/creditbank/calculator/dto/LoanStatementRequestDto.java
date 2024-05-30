@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -30,8 +29,8 @@ public class LoanStatementRequestDto
     String email;
     @Past
     LocalDate birthdate;
-    @Pattern(regexp = "\\d{4}}", message = "Серия паспорта должна содержать 4 цифры.")
+    @Pattern(regexp = "\\d{4}", message = "Серия паспорта должна содержать 4 цифры.")
     String passportSeries;
-    @Pattern(regexp = "\\d{6}}", message = "Номер паспорта должен содержать 6 цифр.")
+    @Pattern(regexp = "\\d{6}", message = "Номер паспорта должен содержать 6 цифр.")
     String passportNumber;
 }
