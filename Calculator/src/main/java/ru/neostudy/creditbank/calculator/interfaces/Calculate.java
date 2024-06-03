@@ -9,6 +9,7 @@ import ru.neostudy.creditbank.calculator.dto.CreditDto;
 import ru.neostudy.creditbank.calculator.dto.LoanOfferDto;
 import ru.neostudy.creditbank.calculator.dto.LoanStatementRequestDto;
 import ru.neostudy.creditbank.calculator.dto.ScoringDataDto;
+import ru.neostudy.creditbank.calculator.exception.DeniedException;
 import ru.neostudy.creditbank.calculator.exception.LaterBirthdateException;
 
 public interface Calculate {
@@ -29,5 +30,5 @@ public interface Calculate {
   )
   CreditDto calculateCreditOffer(
       @Valid @RequestBody @Parameter(description = "Данные, необходимые для скоринга", required = true)
-      ScoringDataDto scoringDataDto);
+      ScoringDataDto scoringDataDto) throws DeniedException;
 }

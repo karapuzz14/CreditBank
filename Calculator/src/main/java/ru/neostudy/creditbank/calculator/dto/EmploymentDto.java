@@ -19,21 +19,30 @@ import ru.neostudy.creditbank.calculator.enums.Position;
 @Schema(description = "Данные о работе клиента")
 public class EmploymentDto {
 
-  @Schema(description = "Статус трудоустройства")
+  @NotNull
+  @Schema(description = "Статус трудоустройства", required = true)
   private EmploymentStatus employmentStatus;
-  @Pattern(regexp = "\\d{10,12}}", message = "Некорректный ИНН.")
-  @Schema(description = "ИНН работодателя")
+
+  @NotNull
+  @Pattern(regexp = "\\d{10,12}", message = "Некорректный ИНН.")
+  @Schema(description = "ИНН работодателя", required = true, example = "1024555125")
   private String employerINN;
+
   @NotNull
-  @Schema(description = "Размер заработной платы")
+  @Schema(description = "Размер заработной платы", required = true, example = "10000.00")
   private BigDecimal salary;
+
   @NotNull
-  @Schema(description = "Должность")
+  @Schema(description = "Должность", required = true)
   private Position position;
+
+  @NotNull
   @PositiveOrZero
-  @Schema(description = "Общий стаж работы")
+  @Schema(description = "Общий стаж работы", required = true, example = "48")
   private Integer workExperienceTotal;
+
+  @NotNull
   @PositiveOrZero
-  @Schema(description = "Текущий стаж работы")
+  @Schema(description = "Текущий стаж работы", required = true, example = "36")
   private Integer workExperienceCurrent;
 }

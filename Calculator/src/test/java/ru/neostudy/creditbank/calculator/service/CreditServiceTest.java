@@ -1,7 +1,7 @@
 package ru.neostudy.creditbank.calculator.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
@@ -18,6 +18,7 @@ import ru.neostudy.creditbank.calculator.enums.EmploymentStatus;
 import ru.neostudy.creditbank.calculator.enums.Gender;
 import ru.neostudy.creditbank.calculator.enums.MaritalStatus;
 import ru.neostudy.creditbank.calculator.enums.Position;
+import ru.neostudy.creditbank.calculator.exception.DeniedException;
 
 @ExtendWith(MockitoExtension.class)
 public class CreditServiceTest {
@@ -25,7 +26,7 @@ public class CreditServiceTest {
   private final CreditService creditService = new CreditService();
 
   @Test
-  void calculateCredit() {
+  void calculateCredit() throws DeniedException {
     BigDecimal rate = new BigDecimal("0.15");
     int term = 20;
     ReflectionTestUtils.setField(creditService, "rate", rate);
@@ -35,7 +36,7 @@ public class CreditServiceTest {
         .build());
     scoringData.setBirthdate(LocalDate.of(2000, 1, 1));
 
-    assertNull(creditService.calculateCredit(scoringData));
+    assertThrows(DeniedException.class, () -> creditService.calculateCredit(scoringData));
 
     scoringData.setEmploymentDto(EmploymentDto.builder()
         .employmentStatus(EmploymentStatus.EMPLOYER)

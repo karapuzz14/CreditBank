@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,6 +17,7 @@ import ru.neostudy.creditbank.calculator.dto.PaymentScheduleElementDto;
 import ru.neostudy.creditbank.calculator.dto.ScoringDataDto;
 import ru.neostudy.creditbank.calculator.enums.EmploymentStatus;
 import ru.neostudy.creditbank.calculator.enums.Gender;
+import ru.neostudy.creditbank.calculator.exception.DeniedException;
 
 /**
  * Сервис, содержащий логику для расчёта полных условий кредита.
@@ -29,34 +31,39 @@ public class CreditService {
 
   /**
    * Рассчитывает полные условия кредита.
-
+   *
    * @param scoringDataDto Персональные данные для скоринга
    * @return Полные условия кредита, включая график ежемесячный платежей
    */
-  public CreditDto calculateCredit(ScoringDataDto scoringDataDto) {
+  public CreditDto calculateCredit(ScoringDataDto scoringDataDto) throws DeniedException {
     if (isDenied(scoringDataDto)) {
-      log.info("Отказ в кредите пользователю с номером счёта {}",
+      log.error("Отказ в кредите пользователю с номером счёта {}",
           scoringDataDto.getAccountNumber());
-      return null;
+      throw new DeniedException("Ошибка скоринга - отказано в кредите.", new Date());
     }
     log.info("Инициирован расчёт полных условий кредита пользователя с номером счёта {}",
         scoringDataDto.getAccountNumber());
+
     int term = scoringDataDto.getTerm();
     BigDecimal requestedAmount = scoringDataDto.getAmount();
     BigDecimal rate = calculateScoredRate(scoringDataDto);
-    OfferService offerService = new OfferService();
     log.debug(
         "Расчёт условий кредита: сумма кредита {}, ставка {}, срок {} мес.",
         requestedAmount, rate, term);
+
+    OfferService offerService = new OfferService();
     BigDecimal monthlyPayment = offerService.calculateMonthlyPayment(rate, requestedAmount, term);
     log.debug("Ежемесячный платёж рассчитан: {}", monthlyPayment);
+
     BigDecimal psk = offerService.calculatePsk(requestedAmount, monthlyPayment, rate);
     log.debug("Полная стоимость кредита рассчитана: {}", psk);
+
     List<PaymentScheduleElementDto> schedule = createSchedule(requestedAmount, monthlyPayment,
         rate);
     log.debug("Расписание платежей рассчитано за период {}/{}, ",
         schedule.get(0).getDate(),
         schedule.get(term - 1).getDate());
+
     log.info("Завершён расчёт полных условий кредита пользователя с номером счёта {}",
         scoringDataDto.getAccountNumber());
     return CreditDto.builder()
@@ -75,6 +82,7 @@ public class CreditService {
       BigDecimal monthlyPayment, BigDecimal rate) {
     ZoneId z = ZoneId.of("Europe/Moscow");
     LocalDate date = LocalDate.now(z);
+
     BigDecimal remainingDebt = requestedAmount;
     BigDecimal interestPayment;
     BigDecimal debtPayment;
@@ -86,6 +94,7 @@ public class CreditService {
       interestPayment = remainingDebt.multiply(rate)
           .multiply(BigDecimal.valueOf(date.lengthOfMonth()))
           .divide(BigDecimal.valueOf(date.lengthOfYear()), RoundingMode.HALF_EVEN);
+
       date = date.plusMonths(1);
       if (remainingDebt.compareTo(monthlyPayment) < 0) {
         debtPayment = remainingDebt;
@@ -94,6 +103,7 @@ public class CreditService {
         debtPayment = monthlyPayment.subtract(interestPayment);
       }
       remainingDebt = remainingDebt.subtract(debtPayment);
+
       schedule.add(
           PaymentScheduleElementDto.builder()
               .number(num)
@@ -106,6 +116,7 @@ public class CreditService {
       );
       ++num;
     }
+
     return schedule;
   }
 
@@ -118,12 +129,14 @@ public class CreditService {
       case SELF_EMPLOYED -> creditRate = creditRate.add(BigDecimal.valueOf(0.02));
       case EMPLOYER -> creditRate = creditRate.add(BigDecimal.valueOf(0.03));
     }
+
     switch (employmentDto.getPosition()) {
       case ORDINARY -> creditRate = creditRate.subtract(BigDecimal.valueOf(0.01));
       case LOWER_MANAGER -> creditRate = creditRate.subtract(BigDecimal.valueOf(0.02));
       case MIDDLE_MANAGER -> creditRate = creditRate.subtract(BigDecimal.valueOf(0.03));
       case TOP_MANAGER -> creditRate = creditRate.subtract(BigDecimal.valueOf(0.04));
     }
+
     switch (scoringDataDto.getMaritalStatus()) {
       case MARRIED -> creditRate = creditRate.subtract(BigDecimal.valueOf(0.03));
       case DIVORCED -> creditRate = creditRate.add(BigDecimal.valueOf(0.01));
@@ -135,7 +148,6 @@ public class CreditService {
         && age <= 60) {
       creditRate = creditRate.subtract(BigDecimal.valueOf(0.03));
     }
-
     if (scoringDataDto.getGender() == Gender.MALE
         && age >= 30
         && age <= 55) {

@@ -7,13 +7,13 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * Возникает в случае, если пользователь несовершеннолетний.
+ * Возникает в случае отказа после скоринга.
  */
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class LaterBirthdateException extends Exception {
+public class DeniedException extends Exception {
 
   private String message;
   private Date timestamp;

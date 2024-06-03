@@ -17,8 +17,8 @@ import ru.neostudy.creditbank.calculator.dto.LoanStatementRequestDto;
 import ru.neostudy.creditbank.calculator.exception.LaterBirthdateException;
 
 /**
- * Сервис для расчёта 4-х возможных условий кредита,
- * ежемесячных аннуитетных платежей, полной стоимости кредита.
+ * Сервис для расчёта 4-х возможных условий кредита, ежемесячных аннуитетных платежей, полной
+ * стоимости кредита.
  */
 @Service
 @RequiredArgsConstructor
@@ -30,7 +30,7 @@ public class OfferService {
 
   /**
    * Проверяет совершеннолетие пользователя.
-
+   *
    * @param date Дата рождения пользователя
    * @throws LaterBirthdateException Ошибка - пользователь несовершеннолетний.
    */
@@ -38,27 +38,29 @@ public class OfferService {
     LocalDate checkpoint = LocalDate.now().minusYears(18);
     if (date.isAfter(checkpoint)) {
       throw new LaterBirthdateException("Некорректно указана дата рождения: '" + date
-          + "'. Дата рождения не может быть раньше более чем на 18 лет относительно текущей даты.",
+          + "'. Пользователь несовершеннолетний.",
           new Date());
     }
   }
 
   /**
-   * Рассчитывает список из 4-х возможных предложений по кредиту
-   * в зависимости от наличия страховки по кредиту и статуса зарплатного клиента.
-
+   * Рассчитывает список из 4-х возможных предложений по кредиту в зависимости от наличия страховки
+   * по кредиту и статуса зарплатного клиента.
+   *
    * @param request Запрос на кредит
    * @return Список из 4-х возможных предложений по кредиту
    */
   public List<LoanOfferDto> getOfferList(LoanStatementRequestDto request) {
     log.info("Инициирован расчёт кредитных предложений пользователя с e-mail: {}",
         request.getEmail());
+
     List<LoanOfferDto> offerList = new ArrayList<>(List.of(
         calculateOffer(request, false, false),
         calculateOffer(request, true, false),
         calculateOffer(request, false, true),
         calculateOffer(request, true, true)));
     offerList.sort(Comparator.comparing(LoanOfferDto::getRate).reversed());
+
     log.info("Завершён расчёт кредитных предложений с e-mail: {}", request.getEmail());
     return offerList;
 
@@ -66,10 +68,10 @@ public class OfferService {
 
   /**
    * Рассчитывает ежемесячный аннуитетный платёж по кредиту.
-
-   * @param offerRate Ставка кредитного предложения
+   *
+   * @param offerRate            Ставка кредитного предложения
    * @param offerRequestedAmount Запрошенная сумма кредита
-   * @param term Срок кредита
+   * @param term                 Срок кредита
    * @return Ежемесячный аннуитетный платёж по кредиту
    */
   public BigDecimal calculateMonthlyPayment(BigDecimal offerRate, BigDecimal offerRequestedAmount,
@@ -87,10 +89,10 @@ public class OfferService {
 
   /**
    * Рассчитывает полную стоимость кредита.
-
+   *
    * @param requestedAmount Запрошенная сумма кредита
-   * @param monthlyPayment Ежемесячный аннуитетный платёж по кредиту
-   * @param rate Процентная ставка по кредиту
+   * @param monthlyPayment  Ежемесячный аннуитетный платёж по кредиту
+   * @param rate            Процентная ставка по кредиту
    * @return Полная стоимость кредита
    */
   public BigDecimal calculatePsk(BigDecimal requestedAmount, BigDecimal monthlyPayment,

@@ -11,6 +11,7 @@ import ru.neostudy.creditbank.calculator.dto.CreditDto;
 import ru.neostudy.creditbank.calculator.dto.LoanOfferDto;
 import ru.neostudy.creditbank.calculator.dto.LoanStatementRequestDto;
 import ru.neostudy.creditbank.calculator.dto.ScoringDataDto;
+import ru.neostudy.creditbank.calculator.exception.DeniedException;
 import ru.neostudy.creditbank.calculator.exception.LaterBirthdateException;
 import ru.neostudy.creditbank.calculator.interfaces.Calculate;
 import ru.neostudy.creditbank.calculator.service.CreditService;
@@ -30,8 +31,9 @@ public class CalculatorController implements Calculate {
   private final OfferService offerService;
 
   /**
-   * Рассчитывает возможные условия кредита.
-
+   * Рассчитывает возможные условия кредита в зависимости от наличия страховки и статуса зарплатного
+   * клиента.
+   *
    * @param loanStatementRequestDto Заявка на кредит
    * @return Список 4-х возможных условий кредита
    * @throws LaterBirthdateException Ошибка - несовершеннолетний пользователь
@@ -41,22 +43,26 @@ public class CalculatorController implements Calculate {
       LoanStatementRequestDto loanStatementRequestDto)
       throws LaterBirthdateException {
     log.debug("Запрос на расчёт возможных условий кредита: {}", loanStatementRequestDto.toString());
+
     offerService.isDateLate(loanStatementRequestDto.getBirthdate());
     List<LoanOfferDto> result = offerService.getOfferList(loanStatementRequestDto);
+
     log.debug("Ответ после расчёта возможных условий кредита: {}", result.toString());
     return result;
   }
 
   /**
    * Рассчитывает полные условия кредита.
-
+   *
    * @param scoringDataDto Персональные данные для скоринга
    * @return Полные условия кредита
    */
   @PostMapping("/calc")
-  public CreditDto calculateCreditOffer(ScoringDataDto scoringDataDto) {
+  public CreditDto calculateCreditOffer(ScoringDataDto scoringDataDto) throws DeniedException {
     log.debug("Запрос на расчёт полных условий кредита: {}", scoringDataDto.toString());
+
     CreditDto result = creditService.calculateCredit(scoringDataDto);
+
     log.debug("Ответ после расчёта полных условий кредита: {}", result.toString());
     return result;
   }
