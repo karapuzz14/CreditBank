@@ -3,3 +3,6 @@ spring:
     name: Calculator
 server:
   port: 9000
+logging:
+  level:
+    ru.neostudy.creditbank.calculator: DEBUG
