@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: Deal
+  datasource:
+    username: postgres
+    password: password
+    url: jdbc:postgresql://localhost:5432/liquitest
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+  liquibase:
+    enabled: true
+server:
+  port: 9001
+logging:
+  level:
+    ru.neostudy.creditbank.deal: DEBUG
