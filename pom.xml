@@ -21,6 +21,7 @@
 
     <modules>
         <module>Calculator</module>
+        <module>Deal</module>
     </modules>
 
     <dependencies>
