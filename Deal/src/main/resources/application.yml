@@ -11,6 +11,12 @@ spring:
       ddl-auto: validate
   liquibase:
     enabled: true
+  cloud:
+    openfeign:
+      client:
+        config:
+          calculator:
+            url: http://localhost:9000/calculator
 server:
   port: 9001
 logging:

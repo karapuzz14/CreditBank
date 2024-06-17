@@ -1,4 +1,4 @@
-package ru.neostudy.creditbank.calculator.controller;
+package ru.neostudy.creditbank.deal.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -6,9 +6,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
-import ru.neostudy.creditbank.calculator.exception.DeniedException;
-import ru.neostudy.creditbank.calculator.exception.ErrorResponse;
-import ru.neostudy.creditbank.calculator.exception.LaterBirthdateException;
+import ru.neostudy.creditbank.deal.exception.DeniedException;
+import ru.neostudy.creditbank.deal.exception.ErrorResponse;
+import ru.neostudy.creditbank.deal.exception.LaterBirthdateException;
 
 /**
  * Глобальный контроллер для перехвата ошибок.
@@ -32,6 +32,7 @@ public class AdviceController {
 
   @ExceptionHandler(DeniedException.class)
   public ResponseEntity<ErrorResponse> onDeniedException(DeniedException e, WebRequest request) {
+    log.warn(e.getMessage());
     return new ResponseEntity<>(new ErrorResponse(
         e.getTimestamp(),
         "cc_denied",

@@ -9,6 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
@@ -19,6 +20,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import ru.neostudy.creditbank.deal.dto.LoanOfferDto;
 import ru.neostudy.creditbank.deal.enums.ApplicationStatus;
+import ru.neostudy.creditbank.deal.enums.ChangeType;
 import ru.neostudy.creditbank.deal.model.attribute.StatementStatusHistoryDto;
 
 @Entity
@@ -54,4 +56,19 @@ public class Statement {
 
   @JdbcTypeCode(SqlTypes.JSON)
   private List<StatementStatusHistoryDto> statusHistory;
+
+  public void setStatusAndHistoryEntry(ApplicationStatus applicationStatus, ChangeType changeType) {
+    if (statusHistory == null) {
+      statusHistory = new ArrayList<>();
+    }
+
+    status = applicationStatus;
+
+    StatementStatusHistoryDto statusHistoryEntry = StatementStatusHistoryDto.builder()
+        .status(applicationStatus)
+        .time(LocalDateTime.now())
+        .changeType(changeType)
+        .build();
+    statusHistory.add(statusHistoryEntry);
+  }
 }

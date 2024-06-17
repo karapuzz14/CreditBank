@@ -1,6 +1,8 @@
 package ru.neostudy.creditbank.deal.controller;
 
 import java.util.List;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,30 +14,38 @@ import ru.neostudy.creditbank.deal.interfaces.Deal;
 import ru.neostudy.creditbank.deal.service.DealService;
 
 @RestController
+@Slf4j
+@RequiredArgsConstructor
 @RequestMapping("/deal")
 public class DealController implements Deal {
 
   private final DealService dealService;
 
-  public DealController(DealService dealService) {
-    this.dealService = dealService;
-  }
-
   @PostMapping("/statement")
   public List<LoanOfferDto> createLoanOffers(LoanStatementRequestDto statementRequest) {
-    List<LoanOfferDto> offers = dealService.createStatement(statementRequest);
-    System.out.println(offers);
-    return offers;
+    log.debug("Запрос на обработку кредитной заявки: {}", statementRequest.toString());
+
+    List<LoanOfferDto> result = dealService.createStatement(statementRequest);
+
+    log.debug("Ответ после обработки кредитной заявки: {}", result.toString());
+    return result;
+
+
   }
 
   @PostMapping("/offer/select")
   public void selectOffer(LoanOfferDto loanOfferDto) {
+    log.debug("Выбор кредитного предложения: {}", loanOfferDto.toString());
+
     dealService.selectOffer(loanOfferDto);
   }
 
   @PostMapping("/calculate/{statementId}")
   public void finishRegistration(FinishRegistrationRequestDto finishRequest,
       @PathVariable String statementId) {
+    log.debug("Запрос на расчёт кредитного предложения по заявке {}: {}",
+        statementId, finishRequest.toString());
+
     dealService.createCredit(finishRequest, statementId);
   }
 }
