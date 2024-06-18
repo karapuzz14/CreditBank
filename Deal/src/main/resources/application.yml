@@ -1,6 +1,6 @@
 spring:
-  application:
-    name: Deal
+  config:
+    import: classpath:application-defaults.yml
   datasource:
     username: postgres
     password: password
@@ -17,8 +17,3 @@ spring:
         config:
           calculator:
             url: http://localhost:9000/calculator
-server:
-  port: 9001
-logging:
-  level:
-    ru.neostudy.creditbank.deal: DEBUG

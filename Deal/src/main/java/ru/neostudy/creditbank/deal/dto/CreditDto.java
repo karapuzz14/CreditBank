@@ -2,6 +2,7 @@ package ru.neostudy.creditbank.deal.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Max;
@@ -55,6 +56,7 @@ public class CreditDto {
   private Boolean isSalaryClient;
 
   @NotNull
+  @Valid
   @Schema(description = "Расписание ежемесячных выплат по кредиту до погашения долга", required = true)
   private List<PaymentScheduleElementDto> paymentSchedule;
 }

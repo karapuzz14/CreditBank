@@ -7,10 +7,12 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.context.ActiveProfiles;
 import ru.neostudy.creditbank.deal.dto.CreditDto;
 import ru.neostudy.creditbank.deal.dto.PaymentScheduleElementDto;
 import ru.neostudy.creditbank.deal.model.entity.Credit;
 
+@ActiveProfiles("test")
 public class CreditMapperTest {
   private final CreditMapperImpl creditMapper = new CreditMapperImpl();
 
@@ -42,10 +44,9 @@ public class CreditMapperTest {
         .isSalaryClient(false)
         .build();
   }
-  @Test
-  public void testCreditMapper() {
 
-    Credit expectedCredit = Credit.builder()
+  private Credit getExpectedCredit() {
+    return Credit.builder()
         .amount(new BigDecimal("100000"))
         .term(20)
         .monthlyPayment(new BigDecimal("5682.04"))
@@ -55,7 +56,11 @@ public class CreditMapperTest {
         .insuranceEnabled(false)
         .salaryClient(false)
         .build();
+  }
+  @Test
+  public void testCreditMapper() {
 
+    Credit expectedCredit = getExpectedCredit();
     Credit actualCredit = creditMapper.dtoToCredit(getCreditDto());
 
     assertEquals(actualCredit, expectedCredit);

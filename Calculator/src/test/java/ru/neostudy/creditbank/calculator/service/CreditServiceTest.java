@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.util.ReflectionTestUtils;
 import ru.neostudy.creditbank.calculator.dto.CreditDto;
 import ru.neostudy.creditbank.calculator.dto.EmploymentDto;
@@ -21,6 +22,7 @@ import ru.neostudy.creditbank.calculator.enums.Position;
 import ru.neostudy.creditbank.calculator.exception.DeniedException;
 
 @ExtendWith(MockitoExtension.class)
+@ActiveProfiles("test")
 public class CreditServiceTest {
 
   private final CreditService creditService = new CreditService();

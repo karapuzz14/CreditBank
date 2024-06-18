@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.context.ActiveProfiles;
 import ru.neostudy.creditbank.deal.dto.EmploymentDto;
 import ru.neostudy.creditbank.deal.dto.FinishRegistrationRequestDto;
 import ru.neostudy.creditbank.deal.dto.LoanStatementRequestDto;
@@ -15,7 +16,9 @@ import ru.neostudy.creditbank.deal.enums.Position;
 import ru.neostudy.creditbank.deal.model.attribute.Passport;
 import ru.neostudy.creditbank.deal.model.entity.Client;
 
+@ActiveProfiles("test")
 public class ClientMapperTest {
+
   private final ClientMapperImpl clientMapper = new ClientMapperImpl();
 
   private LoanStatementRequestDto getLoanStatementRequest() {
@@ -52,8 +55,34 @@ public class ClientMapperTest {
         .build();
   }
 
-  @Test
-  public void testClientMapper() {
+  private Client getExpectedClient() {
+
+    return Client.builder()
+        .lastName("Иванов")
+        .firstName("Иван")
+        .middleName("Иванович")
+        .birthdate(LocalDate.of(2000, 10, 24))
+        .email("ivanov@yandex.ru")
+        .build();
+  }
+
+  private Client getClientForUpdate() {
+    Passport forUpdatePassport = Passport.builder()
+        .issueDate(LocalDate.of(2000, 1, 1))
+        .issueBranch("560-400")
+        .build();
+
+    return Client.builder()
+        .lastName("Иванов")
+        .firstName("Иван")
+        .middleName("Иванович")
+        .birthdate(LocalDate.of(2000, 10, 24))
+        .email("ivanov@yandex.ru")
+        .passport(forUpdatePassport)
+        .build();
+
+  }
+  private Client getUpdatedExpectedClient() {
     EmploymentDto employment = EmploymentDto.builder()
         .employmentStatus(EmploymentStatus.EMPLOYER)
         .employerINN("1024555125")
@@ -66,19 +95,8 @@ public class ClientMapperTest {
         .issueDate(LocalDate.of(2000, 1, 1))
         .issueBranch("560-400")
         .build();
-    Client expectedClient = Client.builder()
-        .lastName("Иванов")
-        .firstName("Иван")
-        .middleName("Иванович")
-        .birthdate(LocalDate.of(2000, 10, 24))
-        .email("ivanov@yandex.ru")
-        .build();
 
-    Client actualClient = clientMapper.dtoToClient(getLoanStatementRequest());
-
-    assertEquals(expectedClient, actualClient);
-
-    Client updatedExpectedClient = Client.builder()
+    return Client.builder()
         .lastName("Иванов")
         .firstName("Иван")
         .middleName("Иванович")
@@ -91,20 +109,17 @@ public class ClientMapperTest {
         .employment(employment)
         .passport(passport)
         .build();
+  }
+  @Test
+  public void testClientMapper() {
 
-    Passport forUpdatePassport = Passport.builder()
-        .issueDate(LocalDate.of(2000, 1, 1))
-        .issueBranch("560-400")
-        .build();
-    Client updatedActualClient = Client.builder()
-        .lastName("Иванов")
-        .firstName("Иван")
-        .middleName("Иванович")
-        .birthdate(LocalDate.of(2000, 10, 24))
-        .email("ivanov@yandex.ru")
-        .passport(forUpdatePassport)
-        .build();
+    Client actualClient = clientMapper.dtoToClient(getLoanStatementRequest());
+    Client expectedClient = getExpectedClient();
 
+    assertEquals(expectedClient, actualClient);
+
+    Client updatedExpectedClient = getUpdatedExpectedClient();
+    Client updatedActualClient = getClientForUpdate();
     clientMapper.updateAtFinish(getFinishRegistrationRequestDto(), updatedActualClient);
 
     assertEquals(updatedExpectedClient, updatedActualClient);

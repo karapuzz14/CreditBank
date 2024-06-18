@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.context.ActiveProfiles;
 import ru.neostudy.creditbank.deal.dto.EmploymentDto;
 import ru.neostudy.creditbank.deal.dto.LoanOfferDto;
 import ru.neostudy.creditbank.deal.dto.ScoringDataDto;
@@ -15,11 +16,12 @@ import ru.neostudy.creditbank.deal.enums.Position;
 import ru.neostudy.creditbank.deal.model.attribute.Passport;
 import ru.neostudy.creditbank.deal.model.entity.Client;
 
+@ActiveProfiles("test")
 public class ScoringDataMapperTest {
 
   private final ScoringDataMapperImpl scoringDataMapper = new ScoringDataMapperImpl();
 
-  public Client getClient() {
+  private Client getClient() {
     EmploymentDto employment = EmploymentDto.builder()
         .employmentStatus(EmploymentStatus.EMPLOYER)
         .employerINN("1024555125")
@@ -50,7 +52,7 @@ public class ScoringDataMapperTest {
         .build();
   }
 
-  public LoanOfferDto getOffer() {
+  private LoanOfferDto getOffer() {
     return LoanOfferDto.builder()
         .requestedAmount(new BigDecimal("100000"))
         .totalAmount(new BigDecimal("113636.81"))
@@ -61,10 +63,9 @@ public class ScoringDataMapperTest {
         .isSalaryClient(false)
         .build();
   }
-  @Test
-  public void testScoringDataMapper() {
 
-    EmploymentDto employment = EmploymentDto.builder()
+  private EmploymentDto getEmployment() {
+    return EmploymentDto.builder()
         .employmentStatus(EmploymentStatus.EMPLOYER)
         .employerINN("1024555125")
         .salary(new BigDecimal("25000"))
@@ -72,10 +73,13 @@ public class ScoringDataMapperTest {
         .workExperienceTotal(20)
         .workExperienceCurrent(4)
         .build();
+  }
+  private ScoringDataDto getExpectedScoringDataDto() {
 
+    EmploymentDto employment = getEmployment();
     LoanOfferDto offer = getOffer();
 
-    ScoringDataDto expectedScoringDataDto = ScoringDataDto.builder()
+    return ScoringDataDto.builder()
         .lastName("Иванов")
         .firstName("Иван")
         .middleName("Иванович")
@@ -94,7 +98,11 @@ public class ScoringDataMapperTest {
         .isInsuranceEnabled(offer.getIsInsuranceEnabled())
         .isSalaryClient(offer.getIsSalaryClient())
         .build();
+  }
+  @Test
+  public void testScoringDataMapper() {
 
+    ScoringDataDto expectedScoringDataDto = getExpectedScoringDataDto();
     Client client = getClient();
     ScoringDataDto actualScoringDataDto = scoringDataMapper.clientDataToDto(client, client.getPassport(), getOffer());
 
