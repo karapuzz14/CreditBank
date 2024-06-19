@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.neostudy.creditbank.deal.dto.FinishRegistrationRequestDto;
 import ru.neostudy.creditbank.deal.dto.LoanOfferDto;
 import ru.neostudy.creditbank.deal.dto.LoanStatementRequestDto;
+import ru.neostudy.creditbank.deal.exception.DeniedException;
 import ru.neostudy.creditbank.deal.interfaces.Deal;
 import ru.neostudy.creditbank.deal.service.DealService;
 
@@ -42,7 +43,7 @@ public class DealController implements Deal {
 
   @PostMapping("/calculate/{statementId}")
   public void finishRegistration(FinishRegistrationRequestDto finishRequest,
-      @PathVariable String statementId) {
+      @PathVariable String statementId) throws DeniedException {
     log.debug("Запрос на расчёт кредитного предложения по заявке {}: {}",
         statementId, finishRequest.toString());
 

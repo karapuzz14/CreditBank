@@ -14,6 +14,7 @@ import ru.neostudy.creditbank.deal.dto.ScoringDataDto;
 import ru.neostudy.creditbank.deal.enums.ApplicationStatus;
 import ru.neostudy.creditbank.deal.enums.ChangeType;
 import ru.neostudy.creditbank.deal.enums.CreditStatus;
+import ru.neostudy.creditbank.deal.exception.DeniedException;
 import ru.neostudy.creditbank.deal.interfaces.CalculatorClient;
 import ru.neostudy.creditbank.deal.mapper.ClientMapperImpl;
 import ru.neostudy.creditbank.deal.mapper.CreditMapperImpl;
@@ -40,6 +41,8 @@ public class DealService {
   private final CreditMapperImpl creditMapper;
 
   public List<LoanOfferDto> createStatement(LoanStatementRequestDto statementRequest) {
+
+    List<LoanOfferDto> offers = calculatorClient.getLoanOffers(statementRequest);
     log.debug("Инициировано создание заявки на кредит: {}", statementRequest);
 
     Client client = clientMapper.dtoToClient(statementRequest);
@@ -60,7 +63,6 @@ public class DealService {
     log.debug("Сохранена сущность заявки: {}", savedStatement);
 
     UUID statementId = savedStatement.getStatementId();
-    List<LoanOfferDto> offers = calculatorClient.getLoanOffers(statementRequest);
     for (LoanOfferDto offer : offers) {
       offer.setStatementId(statementId);
     }
@@ -79,7 +81,8 @@ public class DealService {
 
   }
 
-  public void createCredit(FinishRegistrationRequestDto finishRequest, String statementId) {
+  public void createCredit(FinishRegistrationRequestDto finishRequest, String statementId)
+      throws DeniedException {
 
     Statement statement = statementRepository.getByStatementId(UUID.fromString(statementId));
     Client updatedClient = statement.getClient();
@@ -89,17 +92,24 @@ public class DealService {
 
     ScoringDataDto scoringData = scoringDataMapper.clientDataToDto(updatedClient,
         updatedClient.getPassport(), statement.getAppliedOffer());
+    try {
+      CreditDto creditDto = calculatorClient.getCredit(scoringData);
 
-    CreditDto creditDto = calculatorClient.getCredit(scoringData);
-    Credit credit = creditMapper.dtoToCredit(creditDto);
-    credit.setCreditStatus(CreditStatus.CALCULATED);
-    Credit savedCredit = creditRepository.save(credit);
-    log.debug("Сохранена сущность кредита: {}", savedCredit);
+      Credit credit = creditMapper.dtoToCredit(creditDto);
+      credit.setCreditStatus(CreditStatus.CALCULATED);
+      Credit savedCredit = creditRepository.save(credit);
+      log.debug("Сохранена сущность кредита: {}", savedCredit);
 
-    statement.setCredit(savedCredit);
-    statement.setStatusAndHistoryEntry(ApplicationStatus.CC_APPROVED, ChangeType.AUTOMATIC);
-    statementRepository.save(statement);
-    log.debug("Вычислена и сохранена заявка: {}", statement);
+      statement.setCredit(savedCredit);
+      statement.setStatusAndHistoryEntry(ApplicationStatus.CC_APPROVED, ChangeType.AUTOMATIC);
+      statementRepository.save(statement);
+      log.debug("Вычислена и сохранена заявка: {}", statement);
+    }
+    catch(DeniedException deniedException) {
+        statement.setStatusAndHistoryEntry(ApplicationStatus.CC_DENIED, ChangeType.AUTOMATIC);
+        statementRepository.save(statement);
+        throw deniedException;
+    }
 
   }
 }

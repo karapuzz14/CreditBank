@@ -10,6 +10,7 @@ import ru.neostudy.creditbank.deal.dto.LoanOfferDto;
 import ru.neostudy.creditbank.deal.dto.LoanStatementRequestDto;
 import ru.neostudy.creditbank.deal.dto.ScoringDataDto;
 import ru.neostudy.creditbank.deal.exception.CustomErrorDecoder;
+import ru.neostudy.creditbank.deal.exception.DeniedException;
 
 @FeignClient(value = "calculator", configuration = {FeignConfig.class, CustomErrorDecoder.class})
 public interface CalculatorClient {
@@ -18,5 +19,5 @@ public interface CalculatorClient {
   List<LoanOfferDto> getLoanOffers(LoanStatementRequestDto loanStatementRequestDto);
 
   @RequestMapping(method = RequestMethod.POST, value = "/calc", consumes = "application/json")
-  CreditDto getCredit(ScoringDataDto scoringData);
+  CreditDto getCredit(ScoringDataDto scoringData) throws DeniedException;
 }

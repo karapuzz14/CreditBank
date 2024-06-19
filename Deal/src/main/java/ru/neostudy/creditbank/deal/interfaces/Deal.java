@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import ru.neostudy.creditbank.deal.dto.FinishRegistrationRequestDto;
 import ru.neostudy.creditbank.deal.dto.LoanOfferDto;
 import ru.neostudy.creditbank.deal.dto.LoanStatementRequestDto;
+import ru.neostudy.creditbank.deal.exception.DeniedException;
 
 public interface Deal {
 
@@ -36,7 +37,7 @@ public interface Deal {
   void finishRegistration(
       @Valid @RequestBody @Parameter(description = "Запрос на расчёт выбранного кредитного предложения", required = true)
       FinishRegistrationRequestDto finishRegistrationRequestDto,
-      String statementId);
+      String statementId) throws DeniedException;
 
 
 }
