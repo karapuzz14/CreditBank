@@ -1,4 +1,4 @@
-package ru.neostudy.creditbank.calculator.dto;
+package ru.neostudy.creditbank.deal.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;

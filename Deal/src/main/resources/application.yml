@@ -1,0 +1,19 @@
+spring:
+  config:
+    import: classpath:application-defaults.yml
+  datasource:
+    username: postgres
+    password: password
+    url: jdbc:postgresql://localhost:5432/liquitest
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+  liquibase:
+    enabled: true
+  cloud:
+    openfeign:
+      client:
+        config:
+          calculator:
+            url: http://localhost:9000/calculator

@@ -1,0 +1,47 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: Kirill
+      changes:
+        - createTable:
+            tableName: client
+            columns:
+              - column:
+                  name: client_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+              - column:
+                  name: last_name
+                  type: varchar(30)
+              - column:
+                  name: first_name
+                  type: varchar(30)
+              - column:
+                  name: middle_name
+                  type: varchar(30)
+              - column:
+                  name: birth_date
+                  type: date
+              - column:
+                  name: email
+                  type: varchar(30)
+              - column:
+                  name: gender
+                  type: varchar(6)
+              - column:
+                  name: marital_status
+                  type: varchar(8)
+              - column:
+                  name: dependent_amount
+                  type: int
+              - column:
+                  name: passport
+                  type: jsonb
+              - column:
+                  name: employment
+                  type: jsonb
+              - column:
+                  name: account_number
+                  type: varchar(20)

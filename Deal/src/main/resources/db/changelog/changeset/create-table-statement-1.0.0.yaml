@@ -1,0 +1,38 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0
+      author: Kirill
+      changes:
+        - createTable:
+            tableName: statement
+            columns:
+              - column:
+                  name: statement_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+              - column:
+                  name: client_id
+                  type: uuid
+              - column:
+                  name: credit_id
+                  type: uuid
+              - column:
+                  name: status
+                  type: varchar(17)
+              - column:
+                  name: creation_date
+                  type: timestamp
+              - column:
+                  name: applied_offer
+                  type: jsonb
+              - column:
+                  name: sign_date
+                  type: timestamp
+              - column:
+                  name: ses_code
+                  type: varchar
+              - column:
+                  name: status_history
+                  type: jsonb

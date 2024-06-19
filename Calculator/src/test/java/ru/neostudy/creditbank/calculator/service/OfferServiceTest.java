@@ -12,12 +12,14 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.util.ReflectionTestUtils;
 import ru.neostudy.creditbank.calculator.dto.LoanOfferDto;
 import ru.neostudy.creditbank.calculator.dto.LoanStatementRequestDto;
 import ru.neostudy.creditbank.calculator.exception.LaterBirthdateException;
 
 @ExtendWith(MockitoExtension.class)
+@ActiveProfiles("test")
 class OfferServiceTest {
 
   private final OfferService offerService = new OfferService();
