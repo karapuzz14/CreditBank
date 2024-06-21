@@ -14,13 +14,13 @@ import ru.neostudy.creditbank.statement.interfaces.Statement;
 import ru.neostudy.creditbank.statement.service.StatementService;
 
 /**
- * Основной контроллер Statement API. Осуществляет прескоринг и выбор заявки.
+ * Основной контроллер Statement API. Осуществляет прескоринг и выбор кредитного предложения.
  */
 @RestController
 @RequiredArgsConstructor
 @Slf4j
 @RequestMapping("/statement")
-@Tag(name = "Заявка", description = "Осуществляет прескоринг и выбор заявки.")
+@Tag(name = "Заявка", description = "Осуществляет прескоринг и выбор кредитного предложения.")
 public class StatementController implements Statement {
 
   private final StatementService statementService;

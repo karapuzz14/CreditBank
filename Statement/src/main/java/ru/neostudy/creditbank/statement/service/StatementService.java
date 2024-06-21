@@ -12,7 +12,7 @@ import ru.neostudy.creditbank.statement.exception.LaterBirthdateException;
 import ru.neostudy.creditbank.statement.interfaces.DealClient;
 
 /**
- * Сервис для осуществления прескоринга.
+ * Сервис для осуществления прескоринга и выбора кредитного предложения.
  */
 @Service
 @RequiredArgsConstructor
