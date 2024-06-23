@@ -10,7 +10,6 @@ import ru.neostudy.creditbank.calculator.dto.LoanOfferDto;
 import ru.neostudy.creditbank.calculator.dto.LoanStatementRequestDto;
 import ru.neostudy.creditbank.calculator.dto.ScoringDataDto;
 import ru.neostudy.creditbank.calculator.exception.DeniedException;
-import ru.neostudy.creditbank.calculator.exception.LaterBirthdateException;
 
 public interface Calculate {
 
@@ -21,8 +20,7 @@ public interface Calculate {
   )
   List<LoanOfferDto> calculateLoanOffers(
       @Valid @RequestBody @Parameter(description = "Заявка на кредит", required = true)
-      LoanStatementRequestDto loanStatementRequestDto)
-      throws LaterBirthdateException;
+      LoanStatementRequestDto loanStatementRequestDto);
 
   @Operation(
       summary = "Расчёт полных условий кредита",

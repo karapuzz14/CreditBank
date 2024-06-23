@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,24 +15,12 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.util.ReflectionTestUtils;
 import ru.neostudy.creditbank.calculator.dto.LoanOfferDto;
 import ru.neostudy.creditbank.calculator.dto.LoanStatementRequestDto;
-import ru.neostudy.creditbank.calculator.exception.LaterBirthdateException;
 
 @ExtendWith(MockitoExtension.class)
 @ActiveProfiles("test")
 class OfferServiceTest {
 
   private final OfferService offerService = new OfferService();
-
-  @Test
-  void isDateLate() {
-    LocalDate now = LocalDate.now();
-    assertThrows(LaterBirthdateException.class,
-        () -> offerService.isDateLate(now));
-    assertThrows(LaterBirthdateException.class,
-        () -> offerService.isDateLate(now.plusDays(1)));
-    assertDoesNotThrow(() -> offerService.isDateLate(now.minusYears(18)));
-    assertDoesNotThrow(() -> offerService.isDateLate(now.minusYears(40)));
-  }
 
   @Test
   void getOfferList() {

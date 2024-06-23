@@ -25,7 +25,6 @@ import ru.neostudy.creditbank.calculator.dto.LoanStatementRequestDto;
 import ru.neostudy.creditbank.calculator.dto.PaymentScheduleElementDto;
 import ru.neostudy.creditbank.calculator.dto.ScoringDataDto;
 import ru.neostudy.creditbank.calculator.exception.DeniedException;
-import ru.neostudy.creditbank.calculator.exception.LaterBirthdateException;
 import ru.neostudy.creditbank.calculator.service.CreditService;
 import ru.neostudy.creditbank.calculator.service.OfferService;
 
@@ -144,17 +143,6 @@ public class CalculatorControllerTest {
         )
         .andExpect(status().isOk())
         .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(response)));
-
-    Mockito.doThrow(new LaterBirthdateException()).when(offerService)
-        .isDateLate(request.getBirthdate());
-
-    mockMvc.perform(
-            MockMvcRequestBuilders.post("/calculator/offers")
-                .content(objectMapper.writeValueAsString(request))
-                .contentType(MediaType.APPLICATION_JSON)
-        )
-        .andExpect(status().isBadRequest())
-        .andExpect(jsonPath("$.code").value("minor_user"));
 
   }
 
