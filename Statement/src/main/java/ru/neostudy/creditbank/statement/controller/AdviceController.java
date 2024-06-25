@@ -37,8 +37,9 @@ public class AdviceController {
   }
 
   @ExceptionHandler(HttpMessageNotReadableException.class)
-  public ResponseEntity<ErrorResponse> onInvalidFormatException(HttpMessageNotReadableException e,
+  public ResponseEntity<ErrorResponse> onHttpMessageNotReadableException(HttpMessageNotReadableException e,
       WebRequest request) {
+    log.error(e.getMessage());
     var cause = e.getCause();
 
     if (cause instanceof InvalidFormatException) {
@@ -66,6 +67,7 @@ public class AdviceController {
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public ResponseEntity<ErrorResponse> onMethodArgumentNotValidException(
       MethodArgumentNotValidException e, WebRequest request) {
+    log.error(e.getMessage());
     return new ResponseEntity<>(new ErrorResponse(
         LocalDateTime.now(),
         Objects.requireNonNull(e.getFieldError()).getField(),

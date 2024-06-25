@@ -34,6 +34,8 @@ public class AdviceController {
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public ResponseEntity<ErrorResponse> onMethodArgumentNotValidException(MethodArgumentNotValidException e, WebRequest request) {
+    log.error(e.getMessage());
+
     return new ResponseEntity<>(new ErrorResponse(
         LocalDateTime.now(),
         Objects.requireNonNull(e.getFieldError()).getField(),
