@@ -1,5 +1,6 @@
 package ru.neostudy.creditbank.calculator.controller;
 
+import java.time.LocalDateTime;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,5 +25,16 @@ public class AdviceController {
         e.getMessage(),
         request.getDescription(false)),
         HttpStatus.BAD_REQUEST);
+  }
+
+  @ExceptionHandler(Exception.class)
+  public ResponseEntity<ErrorResponse> onNativeDefaultException(Exception e, WebRequest request) {
+    log.error(e.getMessage());
+    return new ResponseEntity<>(new ErrorResponse(
+        LocalDateTime.now(),
+        "default",
+        e.getMessage(),
+        request.getDescription(false)),
+        HttpStatus.INTERNAL_SERVER_ERROR);
   }
 }

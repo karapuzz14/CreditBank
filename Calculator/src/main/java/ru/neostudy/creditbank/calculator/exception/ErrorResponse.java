@@ -1,8 +1,6 @@
 package ru.neostudy.creditbank.calculator.exception;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.Date;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,15 +12,11 @@ import lombok.Setter;
 @NoArgsConstructor
 public class ErrorResponse {
 
-  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
-  private Date timestamp;
+  private LocalDateTime timestamp;
 
-  @JsonProperty(value = "code")
   private String code;
 
-  @JsonProperty(value = "message")
   private String message;
 
-  @JsonProperty(value = "details")
   private String details;
 }

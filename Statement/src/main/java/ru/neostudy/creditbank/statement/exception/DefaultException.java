@@ -1,14 +1,12 @@
-package ru.neostudy.creditbank.deal.exception;
+package ru.neostudy.creditbank.statement.exception;
 
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
 @AllArgsConstructor
-@NoArgsConstructor
-public class ErrorResponse {
+public class DefaultException extends Exception {
 
   private LocalDateTime timestamp;
 
@@ -17,4 +15,5 @@ public class ErrorResponse {
   private String message;
 
   private String details;
+
 }

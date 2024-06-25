@@ -1,10 +1,12 @@
 package ru.neostudy.creditbank.deal.controller;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
@@ -25,6 +27,8 @@ import ru.neostudy.creditbank.deal.enums.EmploymentStatus;
 import ru.neostudy.creditbank.deal.enums.Gender;
 import ru.neostudy.creditbank.deal.enums.MaritalStatus;
 import ru.neostudy.creditbank.deal.enums.Position;
+import ru.neostudy.creditbank.deal.exception.DefaultException;
+import ru.neostudy.creditbank.deal.exception.DeniedException;
 import ru.neostudy.creditbank.deal.service.DealService;
 
 
@@ -53,6 +57,21 @@ public class DealControllerTest {
         .passportSeries("0000")
         .passportNumber("000000")
         .build();
+  }
+
+  private String getLoanStatementRequestWithIllegalArgument() {
+    return """
+        {
+         "amount": "30000",
+         "term": 20,
+         "firstName": "И",
+         "lastName": "Иванов",
+         "middleName": "Иванович",
+         "email": "ivanov@yandex.ru",
+         "birthdate": "2003-10-24",
+         "passportSeries": "0000",
+         "passportNumber": "000000"
+        }""";
   }
 
   private List<LoanOfferDto> getOffers() {
@@ -114,6 +133,41 @@ public class DealControllerTest {
         )
         .andExpect(status().isOk())
         .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(response)));
+
+    Mockito.when(dealService.createStatement(request))
+        .thenThrow(new DefaultException(LocalDateTime.now(), "default", "", ""));
+
+    mockMvc.perform(
+            MockMvcRequestBuilders.post("/deal/statement")
+                .content(objectMapper.writeValueAsString(request))
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+        .andExpect(status().isInternalServerError())
+        .andExpect(jsonPath("$.code").value("default"));
+  }
+
+  @Test
+  public void createLoanOffersWithIllegalArgument() throws Exception {
+
+    mockMvc.perform(
+            MockMvcRequestBuilders.post("/deal/statement")
+                .content(getLoanStatementRequestWithIllegalArgument())
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.code").value("firstName"));
+  }
+
+  @Test
+  public void createLoanOffersWithOtherException() throws Exception {
+
+    mockMvc.perform(
+            MockMvcRequestBuilders.post("/deal/statement/incorrect_address")
+                .content(objectMapper.writeValueAsString(getLoanStatementRequest()))
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+        .andExpect(status().isInternalServerError())
+        .andExpect(jsonPath("$.code").value("default"));
   }
 
   @Test
@@ -139,5 +193,32 @@ public class DealControllerTest {
         )
         .andExpect(status().isOk());
 
+    Mockito.doThrow(new DeniedException()).when(dealService).createCredit(request, statementId);
+
+    mockMvc.perform(
+            MockMvcRequestBuilders.post("/deal/calculate/" + statementId)
+                .content(objectMapper.writeValueAsString(request))
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.code").value("cc_denied"));
+  }
+
+  @Test
+  public void finishRegistrationWithDefaultException() throws Exception {
+
+    FinishRegistrationRequestDto request = getFinishRegistrationRequestDto();
+    String statementId = UUID.randomUUID().toString();
+
+    Mockito.doThrow(new DefaultException(LocalDateTime.now(), "default", "", ""))
+        .when(dealService).createCredit(request, statementId);
+
+    mockMvc.perform(
+            MockMvcRequestBuilders.post("/deal/calculate/" + statementId)
+                .content(objectMapper.writeValueAsString(request))
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+        .andExpect(status().isInternalServerError())
+        .andExpect(jsonPath("$.code").value("default"));
   }
 }

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.neostudy.creditbank.statement.dto.LoanOfferDto;
 import ru.neostudy.creditbank.statement.dto.LoanStatementRequestDto;
+import ru.neostudy.creditbank.statement.exception.DefaultException;
 import ru.neostudy.creditbank.statement.exception.LaterBirthdateException;
 import ru.neostudy.creditbank.statement.interfaces.Statement;
 import ru.neostudy.creditbank.statement.service.StatementService;
@@ -36,7 +37,7 @@ public class StatementController implements Statement {
   @PostMapping("")
   public List<LoanOfferDto> calculateLoanOffers(
       LoanStatementRequestDto loanStatementRequestDto)
-      throws LaterBirthdateException {
+      throws LaterBirthdateException, DefaultException {
     log.debug("Запрос на расчёт возможных условий кредита: {}", loanStatementRequestDto.toString());
 
     List<LoanOfferDto> offers = statementService.getOffers(loanStatementRequestDto);
@@ -51,7 +52,7 @@ public class StatementController implements Statement {
    * @param loanOfferDto Выбранное предложение
    */
   @PostMapping("/offer")
-  public void selectOffer(LoanOfferDto loanOfferDto) {
+  public void selectOffer(LoanOfferDto loanOfferDto) throws DefaultException {
     log.debug("Выбор кредитного предложения: {}", loanOfferDto.toString());
 
     statementService.selectOffer(loanOfferDto);

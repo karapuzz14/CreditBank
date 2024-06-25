@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.web.bind.annotation.RequestBody;
 import ru.neostudy.creditbank.statement.dto.LoanOfferDto;
 import ru.neostudy.creditbank.statement.dto.LoanStatementRequestDto;
+import ru.neostudy.creditbank.statement.exception.DefaultException;
 import ru.neostudy.creditbank.statement.exception.LaterBirthdateException;
 
 public interface Statement {
@@ -19,7 +20,7 @@ public interface Statement {
   List<LoanOfferDto> calculateLoanOffers(
       @Valid @RequestBody @Parameter(description = "Заявка на кредит", required = true)
       LoanStatementRequestDto loanStatementRequestDto)
-      throws LaterBirthdateException;
+      throws LaterBirthdateException, DefaultException;
 
   @Operation(
       summary = "Выбор кредитного предложения",
@@ -27,5 +28,5 @@ public interface Statement {
   )
   void selectOffer(
       @Valid @RequestBody @Parameter(description = "Выбранное кредитное предложение", required = true)
-      LoanOfferDto loanOfferDto);
+      LoanOfferDto loanOfferDto) throws DefaultException;
 }

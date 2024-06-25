@@ -14,6 +14,7 @@ import ru.neostudy.creditbank.deal.dto.ScoringDataDto;
 import ru.neostudy.creditbank.deal.enums.ApplicationStatus;
 import ru.neostudy.creditbank.deal.enums.ChangeType;
 import ru.neostudy.creditbank.deal.enums.CreditStatus;
+import ru.neostudy.creditbank.deal.exception.DefaultException;
 import ru.neostudy.creditbank.deal.exception.DeniedException;
 import ru.neostudy.creditbank.deal.interfaces.CalculatorClient;
 import ru.neostudy.creditbank.deal.mapper.ClientMapperImpl;
@@ -40,7 +41,7 @@ public class DealService {
   private final ScoringDataMapperImpl scoringDataMapper;
   private final CreditMapperImpl creditMapper;
 
-  public List<LoanOfferDto> createStatement(LoanStatementRequestDto statementRequest) {
+  public List<LoanOfferDto> createStatement(LoanStatementRequestDto statementRequest) throws DefaultException {
 
     List<LoanOfferDto> offers = calculatorClient.getLoanOffers(statementRequest);
     log.debug("Инициировано создание заявки на кредит: {}", statementRequest);
@@ -82,7 +83,7 @@ public class DealService {
   }
 
   public void createCredit(FinishRegistrationRequestDto finishRequest, String statementId)
-      throws DeniedException {
+      throws DeniedException, DefaultException {
 
     Statement statement = statementRepository.getByStatementId(UUID.fromString(statementId));
     Client updatedClient = statement.getClient();

@@ -3,10 +3,10 @@ package ru.neostudy.creditbank.calculator.service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.Period;
 import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,7 +39,7 @@ public class CreditService {
     if (isDenied(scoringDataDto)) {
       log.error("Отказ в кредите пользователю с номером счёта {}",
           scoringDataDto.getAccountNumber());
-      throw new DeniedException("Ошибка скоринга - отказано в кредите.", new Date());
+      throw new DeniedException("Ошибка скоринга - отказано в кредите.", LocalDateTime.now(), "");
     }
     log.info("Инициирован расчёт полных условий кредита пользователя с номером счёта {}",
         scoringDataDto.getAccountNumber());

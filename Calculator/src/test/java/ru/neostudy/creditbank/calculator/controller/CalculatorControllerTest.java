@@ -147,6 +147,17 @@ public class CalculatorControllerTest {
   }
 
   @Test
+  public void calculateLoanOffersWithOtherException() throws Exception {
+
+    mockMvc.perform(
+            MockMvcRequestBuilders.post("/calculator/offers/incorrect_address")
+                .content(objectMapper.writeValueAsString(getLoanStatementRequest()))
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+        .andExpect(status().isInternalServerError())
+        .andExpect(jsonPath("$.code").value("default"));
+  }
+  @Test
   public void calculateCreditOffer() throws Exception {
     ScoringDataDto request = getScoringData();
     CreditDto response = getCredit();

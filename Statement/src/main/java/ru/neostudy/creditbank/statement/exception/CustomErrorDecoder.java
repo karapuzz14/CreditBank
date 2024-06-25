@@ -1,4 +1,4 @@
-package ru.neostudy.creditbank.deal.exception;
+package ru.neostudy.creditbank.statement.exception;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -20,20 +20,12 @@ public class CustomErrorDecoder implements ErrorDecoder {
 
       ErrorResponse errorResponse = mapper.readValue(bodyIs, ErrorResponse.class);
 
-      if (response.status() == 400 && errorResponse.getCode().equals("cc_denied")) {
-          return new DeniedException(
-              errorResponse.getMessage(),
-              errorResponse.getTimestamp(),
-              errorResponse.getDetails());
-      }
-
       return new DefaultException(
           errorResponse.getTimestamp(),
           errorResponse.getCode(),
           errorResponse.getMessage(),
           errorResponse.getDetails()
       );
-
     } catch (IOException e) {
       return new IOException(e.getMessage());
     }

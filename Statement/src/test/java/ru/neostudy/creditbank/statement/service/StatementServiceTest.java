@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.test.context.ActiveProfiles;
 import ru.neostudy.creditbank.statement.dto.LoanOfferDto;
 import ru.neostudy.creditbank.statement.dto.LoanStatementRequestDto;
+import ru.neostudy.creditbank.statement.exception.DefaultException;
 import ru.neostudy.creditbank.statement.exception.LaterBirthdateException;
 import ru.neostudy.creditbank.statement.interfaces.DealClient;
 
@@ -49,7 +50,7 @@ class StatementServiceTest {
   }
 
   @Test
-  public void getOffers() throws LaterBirthdateException {
+  public void getOffers() throws LaterBirthdateException, DefaultException {
     LoanStatementRequestDto request = getLoanStatementRequest();
     LocalDate date = request.getBirthdate();
 

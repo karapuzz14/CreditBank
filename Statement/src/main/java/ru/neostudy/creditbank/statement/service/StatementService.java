@@ -1,13 +1,14 @@
 package ru.neostudy.creditbank.statement.service;
 
 import java.time.LocalDate;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.neostudy.creditbank.statement.dto.LoanOfferDto;
 import ru.neostudy.creditbank.statement.dto.LoanStatementRequestDto;
+import ru.neostudy.creditbank.statement.exception.DefaultException;
 import ru.neostudy.creditbank.statement.exception.LaterBirthdateException;
 import ru.neostudy.creditbank.statement.interfaces.DealClient;
 
@@ -32,7 +33,7 @@ public class StatementService {
     if (date.isAfter(checkpoint)) {
       throw new LaterBirthdateException("Некорректно указана дата рождения: '" + date
           + "'. Пользователь несовершеннолетний.",
-          new Date());
+          LocalDateTime.now(), "");
     }
   }
 
@@ -43,7 +44,7 @@ public class StatementService {
    * @throws LaterBirthdateException Ошибка - пользователь несовершеннолетний.
    */
   public List<LoanOfferDto> getOffers(LoanStatementRequestDto loanStatementRequestDto)
-      throws LaterBirthdateException {
+      throws LaterBirthdateException, DefaultException {
     isDateLate(loanStatementRequestDto.getBirthdate());
 
     return dealClient.getLoanOffers(loanStatementRequestDto);
@@ -54,7 +55,7 @@ public class StatementService {
    *
    * @param loanOfferDto Выбранное кредитное предложение.
    */
-  public void selectOffer(LoanOfferDto loanOfferDto) {
+  public void selectOffer(LoanOfferDto loanOfferDto) throws DefaultException {
     dealClient.selectOffer(loanOfferDto);
   }
 

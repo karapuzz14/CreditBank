@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -19,6 +20,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import ru.neostudy.creditbank.statement.dto.LoanOfferDto;
 import ru.neostudy.creditbank.statement.dto.LoanStatementRequestDto;
+import ru.neostudy.creditbank.statement.exception.DefaultException;
 import ru.neostudy.creditbank.statement.exception.LaterBirthdateException;
 import ru.neostudy.creditbank.statement.service.StatementService;
 
@@ -49,6 +51,35 @@ public class StatementControllerTest {
         .build();
   }
 
+  private String getLoanStatementRequestWithIncorrectBirthdate() {
+    return """
+        {
+         "amount": "30000",
+         "term": 20,
+         "firstName": "Иван",
+         "lastName": "Иванов",
+         "middleName": "Иванович",
+         "email": "ivanov@yandex.ru",
+         "birthdate": "24-10-2003",
+         "passportSeries": "0000",
+         "passportNumber": "000000"
+        }""";
+  }
+
+  private String getLoanStatementRequestWithIllegalArgument() {
+    return """
+        {
+         "amount": "30000",
+         "term": 20,
+         "firstName": "И",
+         "lastName": "Иванов",
+         "middleName": "Иванович",
+         "email": "ivanov@yandex.ru",
+         "birthdate": "2003-10-24",
+         "passportSeries": "0000",
+         "passportNumber": "000000"
+        }""";
+  }
   private List<LoanOfferDto> getOffers() {
     LoanOfferDto example = LoanOfferDto.builder()
         .requestedAmount(new BigDecimal("100000"))
@@ -87,7 +118,9 @@ public class StatementControllerTest {
   }
 
   @Test
-  public void calculateLoanOffers() throws Exception {
+  public void calculateLoanOffers()
+      throws Exception {
+
     LoanStatementRequestDto request = getLoanStatementRequest();
     List<LoanOfferDto> response = getOffers();
 
@@ -109,8 +142,60 @@ public class StatementControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
         )
         .andExpect(status().isBadRequest())
-        .andExpect(jsonPath("$.code").value("minor_user"));
+        .andExpect(jsonPath("$.code").value("birthdate"));
+
 
   }
 
+  @Test
+  public void calculateLoanOffersWithIllegalArgument() throws Exception {
+
+    mockMvc.perform(
+            MockMvcRequestBuilders.post("/statement")
+                .content(getLoanStatementRequestWithIllegalArgument())
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.code").value("firstName"));
+  }
+
+  @Test
+  public void calculateLoanOffersWithIncorrectBirthdate() throws Exception {
+
+    mockMvc.perform(
+            MockMvcRequestBuilders.post("/statement")
+                .content(getLoanStatementRequestWithIncorrectBirthdate())
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.code").value("birthdate"));
+  }
+
+  @Test
+  public void calculateLoanOffersWithOtherException() throws Exception {
+
+    mockMvc.perform(
+            MockMvcRequestBuilders.post("/statement/incorrect_address")
+                .content(getLoanStatementRequestWithIncorrectBirthdate())
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+        .andExpect(status().isInternalServerError())
+        .andExpect(jsonPath("$.code").value("default"));
+  }
+
+  @Test
+  public void calculateLoanOffersWithDefaultException() throws Exception {
+
+    LoanStatementRequestDto request = getLoanStatementRequest();
+    Mockito.when(statementService.getOffers(request))
+        .thenThrow(new DefaultException(LocalDateTime.now(), "default", "", ""));
+
+    mockMvc.perform(
+            MockMvcRequestBuilders.post("/statement")
+                .content(objectMapper.writeValueAsString(request))
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+        .andExpect(status().isInternalServerError())
+        .andExpect(jsonPath("$.code").value("default"));
+  }
 }
