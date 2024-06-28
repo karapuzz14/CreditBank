@@ -12,7 +12,6 @@ import ru.neostudy.creditbank.calculator.dto.LoanOfferDto;
 import ru.neostudy.creditbank.calculator.dto.LoanStatementRequestDto;
 import ru.neostudy.creditbank.calculator.dto.ScoringDataDto;
 import ru.neostudy.creditbank.calculator.exception.DeniedException;
-import ru.neostudy.creditbank.calculator.exception.LaterBirthdateException;
 import ru.neostudy.creditbank.calculator.interfaces.Calculate;
 import ru.neostudy.creditbank.calculator.service.CreditService;
 import ru.neostudy.creditbank.calculator.service.OfferService;
@@ -36,15 +35,12 @@ public class CalculatorController implements Calculate {
    *
    * @param loanStatementRequestDto Заявка на кредит
    * @return Список 4-х возможных условий кредита
-   * @throws LaterBirthdateException Ошибка - несовершеннолетний пользователь
    */
   @PostMapping("/offers")
   public List<LoanOfferDto> calculateLoanOffers(
-      LoanStatementRequestDto loanStatementRequestDto)
-      throws LaterBirthdateException {
+      LoanStatementRequestDto loanStatementRequestDto) {
     log.debug("Запрос на расчёт возможных условий кредита: {}", loanStatementRequestDto.toString());
 
-    offerService.isDateLate(loanStatementRequestDto.getBirthdate());
     List<LoanOfferDto> result = offerService.getOfferList(loanStatementRequestDto);
 
     log.debug("Ответ после расчёта возможных условий кредита: {}", result.toString());

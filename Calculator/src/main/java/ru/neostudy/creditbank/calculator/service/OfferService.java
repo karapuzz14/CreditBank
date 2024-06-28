@@ -6,7 +6,6 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +13,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.neostudy.creditbank.calculator.dto.LoanOfferDto;
 import ru.neostudy.creditbank.calculator.dto.LoanStatementRequestDto;
-import ru.neostudy.creditbank.calculator.exception.LaterBirthdateException;
 
 /**
  * Сервис для расчёта 4-х возможных условий кредита, ежемесячных аннуитетных платежей, полной
@@ -27,21 +25,6 @@ public class OfferService {
 
   @Value("${rate}")
   private BigDecimal rate;
-
-  /**
-   * Проверяет совершеннолетие пользователя.
-   *
-   * @param date Дата рождения пользователя
-   * @throws LaterBirthdateException Ошибка - пользователь несовершеннолетний.
-   */
-  public void isDateLate(LocalDate date) throws LaterBirthdateException {
-    LocalDate checkpoint = LocalDate.now().minusYears(18);
-    if (date.isAfter(checkpoint)) {
-      throw new LaterBirthdateException("Некорректно указана дата рождения: '" + date
-          + "'. Пользователь несовершеннолетний.",
-          new Date());
-    }
-  }
 
   /**
    * Рассчитывает список из 4-х возможных предложений по кредиту в зависимости от наличия страховки

@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: Statement
+server:
+  port: 9002
+logging:
+  level:
+    ru.neostudy.creditbank.statement: DEBUG

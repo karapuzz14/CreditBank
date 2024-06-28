@@ -25,7 +25,6 @@ import ru.neostudy.creditbank.calculator.dto.LoanStatementRequestDto;
 import ru.neostudy.creditbank.calculator.dto.PaymentScheduleElementDto;
 import ru.neostudy.creditbank.calculator.dto.ScoringDataDto;
 import ru.neostudy.creditbank.calculator.exception.DeniedException;
-import ru.neostudy.creditbank.calculator.exception.LaterBirthdateException;
 import ru.neostudy.creditbank.calculator.service.CreditService;
 import ru.neostudy.creditbank.calculator.service.OfferService;
 
@@ -145,19 +144,19 @@ public class CalculatorControllerTest {
         .andExpect(status().isOk())
         .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(response)));
 
-    Mockito.doThrow(new LaterBirthdateException()).when(offerService)
-        .isDateLate(request.getBirthdate());
-
-    mockMvc.perform(
-            MockMvcRequestBuilders.post("/calculator/offers")
-                .content(objectMapper.writeValueAsString(request))
-                .contentType(MediaType.APPLICATION_JSON)
-        )
-        .andExpect(status().isBadRequest())
-        .andExpect(jsonPath("$.code").value("minor_user"));
-
   }
 
+  @Test
+  public void calculateLoanOffersWithOtherException() throws Exception {
+
+    mockMvc.perform(
+            MockMvcRequestBuilders.post("/calculator/offers/incorrect_address")
+                .content(objectMapper.writeValueAsString(getLoanStatementRequest()))
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+        .andExpect(status().isInternalServerError())
+        .andExpect(jsonPath("$.code").value("default"));
+  }
   @Test
   public void calculateCreditOffer() throws Exception {
     ScoringDataDto request = getScoringData();

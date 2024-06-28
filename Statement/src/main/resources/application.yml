@@ -1,0 +1,9 @@
+spring:
+  config:
+    import: classpath:application-defaults.yml
+  cloud:
+    openfeign:
+      client:
+        config:
+          deal:
+            url: http://localhost:9001/deal
