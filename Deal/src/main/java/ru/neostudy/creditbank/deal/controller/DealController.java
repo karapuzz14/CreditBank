@@ -14,6 +14,7 @@ import ru.neostudy.creditbank.deal.exception.DefaultException;
 import ru.neostudy.creditbank.deal.exception.DeniedException;
 import ru.neostudy.creditbank.deal.interfaces.Deal;
 import ru.neostudy.creditbank.deal.service.DealService;
+import ru.neostudy.creditbank.deal.service.EmailService;
 
 @RestController
 @Slf4j
@@ -22,6 +23,7 @@ import ru.neostudy.creditbank.deal.service.DealService;
 public class DealController implements Deal {
 
   private final DealService dealService;
+  private final EmailService emailService;
 
   @PostMapping("/statement")
   public List<LoanOfferDto> createLoanOffers(LoanStatementRequestDto statementRequest)
@@ -50,5 +52,26 @@ public class DealController implements Deal {
         statementId, finishRequest.toString());
 
     dealService.createCredit(finishRequest, statementId);
+  }
+
+  @PostMapping("/document/{statementId}/send")
+  public void sendDocuments(@PathVariable String statementId) {
+    log.debug("Запрос на формирование и отправку документов по заявке {}", statementId);
+
+    emailService.sendEmailMessage("send-documents", statementId);
+  }
+
+  @PostMapping("/document/{statementId}/sign")
+  public void signDocuments(@PathVariable String statementId) {
+    log.debug("Запрос на подписание документов по заявке {}", statementId);
+
+    emailService.sendEmailMessage("send-ses", statementId);
+  }
+
+  @PostMapping("/document/{statementId}/code")
+  public void sendCode(@PathVariable String statementId) {
+    log.debug("Запрос на подтверждение кода для подписания документов по заявке {}", statementId);
+
+    emailService.sendEmailMessage("credit_issued", statementId);
   }
 }

@@ -18,3 +18,5 @@ spring:
         config:
           calculator:
             url: http://localhost:9000/calculator
+  kafka:
+    bootstrap-servers: localhost:9092

@@ -5,8 +5,10 @@ import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import ru.neostudy.creditbank.deal.dto.CreditDto;
+import ru.neostudy.creditbank.deal.dto.EmailMessage;
 import ru.neostudy.creditbank.deal.dto.FinishRegistrationRequestDto;
 import ru.neostudy.creditbank.deal.dto.LoanOfferDto;
 import ru.neostudy.creditbank.deal.dto.LoanStatementRequestDto;
@@ -14,6 +16,7 @@ import ru.neostudy.creditbank.deal.dto.ScoringDataDto;
 import ru.neostudy.creditbank.deal.enums.ApplicationStatus;
 import ru.neostudy.creditbank.deal.enums.ChangeType;
 import ru.neostudy.creditbank.deal.enums.CreditStatus;
+import ru.neostudy.creditbank.deal.enums.Theme;
 import ru.neostudy.creditbank.deal.exception.DefaultException;
 import ru.neostudy.creditbank.deal.exception.DeniedException;
 import ru.neostudy.creditbank.deal.interfaces.CalculatorClient;
@@ -40,6 +43,7 @@ public class DealService {
   private final ClientMapperImpl clientMapper;
   private final ScoringDataMapperImpl scoringDataMapper;
   private final CreditMapperImpl creditMapper;
+  private final KafkaTemplate<String, EmailMessage> emailKafkaTemplate;
 
   public List<LoanOfferDto> createStatement(LoanStatementRequestDto statementRequest) throws DefaultException {
 
@@ -80,6 +84,13 @@ public class DealService {
     statementRepository.save(statement);
     log.debug("Сохранено выбранное кредитное предложение: {}", statement);
 
+    EmailMessage message = EmailMessage.builder()
+        .address(statement.getClient().getEmail())
+        .theme(Theme.FINISH_REGISTRATION)
+        .statementId(statement.getStatementId())
+        .build();
+    emailKafkaTemplate.send("finish-registration", message);
+
   }
 
   public void createCredit(FinishRegistrationRequestDto finishRequest, String statementId)
@@ -105,10 +116,24 @@ public class DealService {
       statement.setStatusAndHistoryEntry(ApplicationStatus.CC_APPROVED, ChangeType.AUTOMATIC);
       statementRepository.save(statement);
       log.debug("Вычислена и сохранена заявка: {}", statement);
+
+      EmailMessage message = EmailMessage.builder()
+          .address(statement.getClient().getEmail())
+          .theme(Theme.CREATE_DOCUMENTS)
+          .statementId(statement.getStatementId())
+          .build();
+      emailKafkaTemplate.send("create-documents", message);
     }
     catch(DeniedException deniedException) {
         statement.setStatusAndHistoryEntry(ApplicationStatus.CC_DENIED, ChangeType.AUTOMATIC);
         statementRepository.save(statement);
+
+      EmailMessage message = EmailMessage.builder()
+          .address(statement.getClient().getEmail())
+          .theme(Theme.STATEMENT_DENIED)
+          .statementId(statement.getStatementId())
+          .build();
+      emailKafkaTemplate.send("statement-denied", message);
         throw deniedException;
     }
 
