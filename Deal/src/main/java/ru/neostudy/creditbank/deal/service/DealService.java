@@ -45,7 +45,8 @@ public class DealService {
   private final CreditMapperImpl creditMapper;
   private final KafkaTemplate<String, EmailMessage> emailKafkaTemplate;
 
-  public List<LoanOfferDto> createStatement(LoanStatementRequestDto statementRequest) throws DefaultException {
+  public List<LoanOfferDto> createStatement(LoanStatementRequestDto statementRequest)
+      throws DefaultException {
 
     List<LoanOfferDto> offers = calculatorClient.getLoanOffers(statementRequest);
     log.debug("Инициировано создание заявки на кредит: {}", statementRequest);
@@ -84,12 +85,7 @@ public class DealService {
     statementRepository.save(statement);
     log.debug("Сохранено выбранное кредитное предложение: {}", statement);
 
-    EmailMessage message = EmailMessage.builder()
-        .address(statement.getClient().getEmail())
-        .theme(Theme.FINISH_REGISTRATION)
-        .statementId(statement.getStatementId())
-        .build();
-    emailKafkaTemplate.send("finish-registration", message);
+    sendEmailMessage(statement, Theme.FINISH_REGISTRATION);
 
   }
 
@@ -117,25 +113,27 @@ public class DealService {
       statementRepository.save(statement);
       log.debug("Вычислена и сохранена заявка: {}", statement);
 
-      EmailMessage message = EmailMessage.builder()
-          .address(statement.getClient().getEmail())
-          .theme(Theme.CREATE_DOCUMENTS)
-          .statementId(statement.getStatementId())
-          .build();
-      emailKafkaTemplate.send("create-documents", message);
-    }
-    catch(DeniedException deniedException) {
-        statement.setStatusAndHistoryEntry(ApplicationStatus.CC_DENIED, ChangeType.AUTOMATIC);
-        statementRepository.save(statement);
+      sendEmailMessage(statement, Theme.CREATE_DOCUMENTS);
 
-      EmailMessage message = EmailMessage.builder()
-          .address(statement.getClient().getEmail())
-          .theme(Theme.STATEMENT_DENIED)
-          .statementId(statement.getStatementId())
-          .build();
-      emailKafkaTemplate.send("statement-denied", message);
-        throw deniedException;
+    } catch (DeniedException deniedException) {
+      statement.setStatusAndHistoryEntry(ApplicationStatus.CC_DENIED, ChangeType.AUTOMATIC);
+      statementRepository.save(statement);
+
+      sendEmailMessage(statement, Theme.STATEMENT_DENIED);
+      throw deniedException;
     }
 
+  }
+
+  private void sendEmailMessage(Statement statement, Theme theme) {
+    EmailMessage message = EmailMessage.builder()
+        .address(statement.getClient().getEmail())
+        .theme(theme)
+        .statementId(statement.getStatementId())
+        .build();
+    emailKafkaTemplate.send(theme.getConnectedTopic(), message);
+
+    log.debug("Отправлено сообщение в МС-Dossier через Kafka по теме {}: {}",
+        theme.getConnectedTopic(), message.toString());
   }
 }

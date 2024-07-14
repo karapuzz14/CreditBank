@@ -23,6 +23,7 @@
         <module>Calculator</module>
         <module>Deal</module>
         <module>Statement</module>
+        <module>Dossier</module>
     </modules>
 
     <dependencies>

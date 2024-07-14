@@ -40,5 +40,42 @@ public interface Deal {
       FinishRegistrationRequestDto finishRegistrationRequestDto,
       String statementId) throws DeniedException, DefaultException;
 
+  @Operation(
+      summary = "Формирование и отправка документов",
+      description = "Формирует текст документов и отправляет его в МС-Dossier "
+          + "для последующей отправки письма с документами и ссылкой на их подписание. "
+          + "Изменяет статус заявки на PREPARE_DOCUMENTS."
+  )
+  void sendDocuments(
+      @Parameter(description = "Идентификатор заявки", required = true) String statementId);
+
+  @Operation(
+      summary = "Обновление статуса заявки",
+      description = "Изменяет статус заявки на DOCUMENTS_CREATED после отправки письма с документами в МС-Dossier."
+  )
+  void changeStatusOnDocumentsCreated(
+      @Parameter(description = "Идентификатор заявки", required = true) String statementId);
+
+  @Operation(
+      summary = "Подписание документов",
+      description = "Обрабатывает решение пользователя по условиям кредита (согласие/отказ), "
+          + "в случае согласия отправляет на почту ссылку на подтверждение подписи с 4-хзначным кодом. "
+          + "В случае отказа изменяет в БД статус заявки на CLIENT_DENIED. "
+          + "Сохраняет в БД код подтверждения для соответствующей заявки."
+  )
+  void signDocuments(
+      @Parameter(description = "Согласие/отказ клиента в подписании документов", required = true) Boolean isAccepted,
+      @Parameter(description = "Идентификатор заявки", required = true) String statementId);
+
+
+  @Operation(
+      summary = "Подтверждение подписания документов",
+      description = "Сравнивает полученный и отправленный код. "
+          + "В случае совпадения изменяет в БД статус заявки на CREDIT_ISSUED, статус кредита на ISSUED. "
+          + "Отправляет уведомление о выдаче кредита на почту."
+  )
+  void sendCodeVerification(
+      @Parameter(description = "Код подтверждения") String code,
+      @Parameter(description = "Идентификатор заявки", required = true) String statementId);
 
 }
