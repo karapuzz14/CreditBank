@@ -3,6 +3,7 @@ package ru.neostudy.creditbank.deal.controller;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,6 +30,15 @@ public class DealController implements Deal {
 
   private final DealService dealService;
   private final EmailService emailService;
+
+  @Value("${topics.send-documents}")
+  private String sendDocumentsTopic;
+
+  @Value("${topics.send-ses}")
+  private String sendSesTopic;
+
+  @Value("${topics.credit-issued}")
+  private String creditIssuedTopic;
 
   @PostMapping("/statement")
   public List<LoanOfferDto> createLoanOffers(LoanStatementRequestDto statementRequest)
@@ -63,7 +73,7 @@ public class DealController implements Deal {
   public void sendDocuments(@PathVariable String statementId) {
     log.debug("Запрос на формирование и отправку документов по заявке {}", statementId);
 
-    emailService.sendDocuments("send-documents", statementId, ApplicationStatus.PREPARE_DOCUMENTS);
+    emailService.sendDocuments(sendDocumentsTopic, statementId, ApplicationStatus.PREPARE_DOCUMENTS);
   }
 
   @PutMapping("/document/{statementId}/status")
@@ -81,7 +91,7 @@ public class DealController implements Deal {
     log.debug("Запрос на подписание документов по заявке {}. Принято: {}", statementId, isAccepted);
 
     if (isAccepted) {
-      emailService.sendCode("send-ses", statementId);
+      emailService.sendCode(sendSesTopic, statementId);
     } else {
       log.debug("Изменение статуса заявки {} на 'CLIENT_DENIED'", statementId);
 
@@ -95,6 +105,6 @@ public class DealController implements Deal {
   public void sendCodeVerification(@RequestParam("code") String code, @PathVariable String statementId) {
     log.debug("Запрос на подтверждение кода для подписания документов по заявке {}. Полученный код: {}", statementId, code);
 
-    emailService.sendCreditIssuedMessage("credit-issued", statementId, code);
+    emailService.sendCreditIssuedMessage(creditIssuedTopic, statementId, code);
   }
 }

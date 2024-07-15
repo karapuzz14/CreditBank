@@ -16,6 +16,7 @@ import ru.neostudy.creditbank.dossier.service.EmailService;
 public class DossierListener {
 
   private final EmailService emailService;
+
   @KafkaListener(topics = "finish-registration", groupId = "group1", containerFactory = "emailMessageListenerContainerFactory")
   public void finishRegistrationListener(EmailMessage message) {
     log.debug("Получено сообщение от МС-deal: {}", message.toString());
