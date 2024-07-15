@@ -1,4 +1,4 @@
-package ru.neostudy.creditbank.deal;
+package ru.neostudy.creditbank.dossier;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -6,12 +6,12 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.PropertySource;
 
 @SpringBootApplication
-@PropertySource("classpath:kafka-topics.properties")
 @EnableFeignClients
-public class DealApplication {
+@PropertySource("classpath:dossier.properties")
+public class DossierApplication {
 
   public static void main(String[] args) {
-    SpringApplication.run(DealApplication.class, args);
+    SpringApplication.run(DossierApplication.class, args);
   }
 
 }

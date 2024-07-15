@@ -5,8 +5,10 @@ import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import ru.neostudy.creditbank.deal.dto.CreditDto;
+import ru.neostudy.creditbank.deal.dto.EmailMessage;
 import ru.neostudy.creditbank.deal.dto.FinishRegistrationRequestDto;
 import ru.neostudy.creditbank.deal.dto.LoanOfferDto;
 import ru.neostudy.creditbank.deal.dto.LoanStatementRequestDto;
@@ -14,6 +16,7 @@ import ru.neostudy.creditbank.deal.dto.ScoringDataDto;
 import ru.neostudy.creditbank.deal.enums.ApplicationStatus;
 import ru.neostudy.creditbank.deal.enums.ChangeType;
 import ru.neostudy.creditbank.deal.enums.CreditStatus;
+import ru.neostudy.creditbank.deal.enums.Theme;
 import ru.neostudy.creditbank.deal.exception.DefaultException;
 import ru.neostudy.creditbank.deal.exception.DeniedException;
 import ru.neostudy.creditbank.deal.interfaces.CalculatorClient;
@@ -40,8 +43,10 @@ public class DealService {
   private final ClientMapperImpl clientMapper;
   private final ScoringDataMapperImpl scoringDataMapper;
   private final CreditMapperImpl creditMapper;
+  private final KafkaTemplate<String, EmailMessage> emailKafkaTemplate;
 
-  public List<LoanOfferDto> createStatement(LoanStatementRequestDto statementRequest) throws DefaultException {
+  public List<LoanOfferDto> createStatement(LoanStatementRequestDto statementRequest)
+      throws DefaultException {
 
     List<LoanOfferDto> offers = calculatorClient.getLoanOffers(statementRequest);
     log.debug("Инициировано создание заявки на кредит: {}", statementRequest);
@@ -80,6 +85,8 @@ public class DealService {
     statementRepository.save(statement);
     log.debug("Сохранено выбранное кредитное предложение: {}", statement);
 
+    sendEmailMessage(statement, Theme.FINISH_REGISTRATION);
+
   }
 
   public void createCredit(FinishRegistrationRequestDto finishRequest, String statementId)
@@ -105,12 +112,28 @@ public class DealService {
       statement.setStatusAndHistoryEntry(ApplicationStatus.CC_APPROVED, ChangeType.AUTOMATIC);
       statementRepository.save(statement);
       log.debug("Вычислена и сохранена заявка: {}", statement);
-    }
-    catch(DeniedException deniedException) {
-        statement.setStatusAndHistoryEntry(ApplicationStatus.CC_DENIED, ChangeType.AUTOMATIC);
-        statementRepository.save(statement);
-        throw deniedException;
+
+      sendEmailMessage(statement, Theme.CREATE_DOCUMENTS);
+
+    } catch (DeniedException deniedException) {
+      statement.setStatusAndHistoryEntry(ApplicationStatus.CC_DENIED, ChangeType.AUTOMATIC);
+      statementRepository.save(statement);
+
+      sendEmailMessage(statement, Theme.STATEMENT_DENIED);
+      throw deniedException;
     }
 
+  }
+
+  private void sendEmailMessage(Statement statement, Theme theme) {
+    EmailMessage message = EmailMessage.builder()
+        .address(statement.getClient().getEmail())
+        .theme(theme)
+        .statementId(statement.getStatementId())
+        .build();
+    emailKafkaTemplate.send(theme.getConnectedTopic(), message);
+
+    log.debug("Отправлено сообщение в МС-Dossier через Kafka по теме {}: {}",
+        theme.getConnectedTopic(), message.toString());
   }
 }

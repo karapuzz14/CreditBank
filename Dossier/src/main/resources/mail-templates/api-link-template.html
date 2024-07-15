@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Отправка документов</title>
+</head>
+<body>
+  <p  th:text="${text}"></p>
+  <a th:attr="href=@{${link}}" th:text="${link_text}">Сформировать документы</a>
+</body>
+</html>

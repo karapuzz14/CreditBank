@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>CreditBank</title>
+</head>
+<body>
+  <p>Все условия кредита описаны в приложенных к письму документах. Вы принимаете условия договора?</p>
+  <a th:attr="href=@{${accept_link}}">Принять</a>
+  <a th:attr="href=@{${reject_link}}">Отклонить</a>
+</body>
+</html>

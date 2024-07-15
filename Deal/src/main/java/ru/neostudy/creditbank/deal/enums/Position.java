@@ -1,9 +1,19 @@
 package ru.neostudy.creditbank.deal.enums;
 
-public enum Position {
-  ORDINARY,
-  LOWER_MANAGER,
-  MIDDLE_MANAGER,
-  TOP_MANAGER
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
+@Getter
+@RequiredArgsConstructor
+public enum Position {
+
+  ORDINARY("Рядовой сотрудник"),
+
+  LOWER_MANAGER("Менеджер нижнего звена"),
+
+  MIDDLE_MANAGER("Менеджер среднего звена"),
+
+  TOP_MANAGER("Топ-менеджер");
+
+  private final String docName;
 }
