@@ -1,0 +1,16 @@
+logging:
+  level:
+    ru.neostudy.creditbank.gateway: DEBUG
+spring:
+  cloud:
+    openfeign:
+      client:
+        config:
+          deal:
+            url: http://localhost:9001/deal
+          statement:
+            url: http://localhost:9002/statement
+  application:
+    name: Gateway
+server:
+  port: 9004

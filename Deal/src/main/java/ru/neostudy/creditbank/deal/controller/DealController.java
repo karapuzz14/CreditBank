@@ -19,6 +19,8 @@ import ru.neostudy.creditbank.deal.enums.ChangeType;
 import ru.neostudy.creditbank.deal.exception.DefaultException;
 import ru.neostudy.creditbank.deal.exception.DeniedException;
 import ru.neostudy.creditbank.deal.interfaces.Deal;
+import ru.neostudy.creditbank.deal.model.entity.Statement;
+import ru.neostudy.creditbank.deal.service.AdminService;
 import ru.neostudy.creditbank.deal.service.DealService;
 import ru.neostudy.creditbank.deal.service.EmailService;
 
@@ -30,6 +32,7 @@ public class DealController implements Deal {
 
   private final DealService dealService;
   private final EmailService emailService;
+  private final AdminService adminService;
 
   @Value("${topics.send-documents}")
   private String sendDocumentsTopic;
@@ -49,8 +52,6 @@ public class DealController implements Deal {
 
     log.debug("Ответ после обработки кредитной заявки: {}", result.toString());
     return result;
-
-
   }
 
   @PostMapping("/offer/select")
@@ -106,5 +107,19 @@ public class DealController implements Deal {
     log.debug("Запрос на подтверждение кода для подписания документов по заявке {}. Полученный код: {}", statementId, code);
 
     emailService.sendCreditIssuedMessage(creditIssuedTopic, statementId, code);
+  }
+
+  @GetMapping("/admin/statement/{statementId}")
+  public Statement getStatementById(@PathVariable String statementId) {
+    log.debug("Запрос администратора на получение заявки {}", statementId);
+
+    return adminService.getStatementById(statementId);
+  }
+
+  @GetMapping("/admin/statement")
+  public List<Statement> getAllStatements() {
+    log.debug("Запрос администратора на получение всех заявок");
+
+    return adminService.getAllStatements();
   }
 }

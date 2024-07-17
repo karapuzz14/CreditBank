@@ -10,6 +10,7 @@ import ru.neostudy.creditbank.deal.dto.LoanOfferDto;
 import ru.neostudy.creditbank.deal.dto.LoanStatementRequestDto;
 import ru.neostudy.creditbank.deal.exception.DefaultException;
 import ru.neostudy.creditbank.deal.exception.DeniedException;
+import ru.neostudy.creditbank.deal.model.entity.Statement;
 
 public interface Deal {
 
@@ -78,4 +79,17 @@ public interface Deal {
       @Parameter(description = "Код подтверждения") String code,
       @Parameter(description = "Идентификатор заявки", required = true) String statementId);
 
+
+  @Operation(
+      summary = "Получение заявки по ID",
+      description = "Возвращает заявку по её идентификатору. Функция администратора."
+  )
+  Statement getStatementById(
+      @Parameter(description = "Идентификатор заявки", required = true) String statementId);
+
+  @Operation(
+      summary = "Получение всех заявок",
+      description = "Возвращает все заявки. Функция администратора."
+  )
+  List<Statement> getAllStatements();
 }
