@@ -32,9 +32,9 @@ public interface DealClient {
       throws DefaultException;
 
   @GetMapping("/admin/statement/{statementId}")
-  Statement getStatementById(@PathVariable String statementId) throws DefaultException;;
+  Statement getStatementById(@PathVariable String statementId) throws DefaultException;
 
   @GetMapping("/admin/statement")
-  List<Statement> getAllStatements() throws DefaultException;;
+  List<Statement> getAllStatements() throws DefaultException;
 
 }
