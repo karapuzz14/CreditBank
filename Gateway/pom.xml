@@ -7,7 +7,6 @@
     <groupId>ru.neostudy.creditbank</groupId>
     <artifactId>CreditBank</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <relativePath/> <!-- lookup parent from repository -->
   </parent>
   <artifactId>Gateway</artifactId>
   <version>0.0.1-SNAPSHOT</version>
