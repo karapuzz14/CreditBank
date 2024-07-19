@@ -61,7 +61,7 @@ public class EmailService {
     templateContext.setVariable("text", "Ваша заявка на кредит одобрена. "
         + "Для того, чтобы получить документы на почту, перейдите по ссылке:");
     templateContext.setVariable("link_text", "Сформировать документы");
-    templateContext.setVariable("link", dealUrl + message.getStatementId() + "/send");
+    templateContext.setVariable("link", dealUrl + message.getStatementId());
 
     String htmlBody = templateEngine.process("api-link-template.html", templateContext);
     helper.setText(htmlBody, true);
@@ -140,7 +140,7 @@ public class EmailService {
         "Ваше согласие на подпись документа было обработано. "
             + "Для того, чтобы подтвердить свою подпись, перейдите по ссылке:");
     templateContext.setVariable("link_text", "Подтвердить подпись");
-    templateContext.setVariable("link", dealUrl + message.getStatementId() + "/code?code=" + message.getCode());
+    templateContext.setVariable("link", dealUrl + message.getStatementId() + "/sign/code?code=" + message.getCode());
 
     String htmlBody = templateEngine.process("api-link-template.html", templateContext);
     helper.setText(htmlBody, true);
