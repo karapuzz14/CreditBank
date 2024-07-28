@@ -29,7 +29,9 @@ import ru.neostudy.creditbank.deal.enums.MaritalStatus;
 import ru.neostudy.creditbank.deal.enums.Position;
 import ru.neostudy.creditbank.deal.exception.DefaultException;
 import ru.neostudy.creditbank.deal.exception.DeniedException;
+import ru.neostudy.creditbank.deal.service.AdminService;
 import ru.neostudy.creditbank.deal.service.DealService;
+import ru.neostudy.creditbank.deal.service.EmailService;
 
 
 @WebMvcTest
@@ -44,6 +46,12 @@ public class DealControllerTest {
 
   @MockBean
   private DealService dealService;
+
+  @MockBean
+  private EmailService emailService;
+
+  @MockBean
+  private AdminService adminService;
 
   private LoanStatementRequestDto getLoanStatementRequest() {
     return LoanStatementRequestDto.builder()

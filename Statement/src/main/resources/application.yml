@@ -6,4 +6,4 @@ spring:
       client:
         config:
           deal:
-            url: http://localhost:9001/deal
+            url: http://deal:9001/deal

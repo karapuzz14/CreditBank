@@ -4,7 +4,7 @@ spring:
   datasource:
     username: postgres
     password: password
-    url: jdbc:postgresql://localhost:5432/liquitest
+    url: jdbc:postgresql://database:5432/liquitest
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -17,6 +17,6 @@ spring:
       client:
         config:
           calculator:
-            url: http://localhost:9000/calculator
+            url: http://calculator:9000/calculator
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: broker:9092

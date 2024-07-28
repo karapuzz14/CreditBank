@@ -1,4 +1,82 @@
 services:
+  calculator:
+    container_name: calculator
+    build:
+      context: Calculator
+      dockerfile: Dockerfile
+    image: calculator:0.0.1
+    expose:
+      - 9000
+    networks:
+      - main-network
+
+  deal:
+    container_name: deal
+    build:
+      context: Deal
+      dockerfile: Dockerfile
+    image: deal:0.0.1
+    expose:
+      - 9001
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://database:5432/liquitest
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=password
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=validate
+    depends_on:
+      - database
+    networks:
+      - main-network
+
+  database:
+    image: postgres:14.7-alpine
+    container_name: database
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=liquitest
+    volumes:
+      - ./db/create-db.sql:/docker-entrypoint-initdb.d/create-db.sql
+      - db-data:/var/lib/postgresql/data
+    networks:
+      - main-network
+    expose:
+      - 5432
+    restart: unless-stopped
+
+  statement:
+    container_name: statement
+    build:
+      context: Statement
+      dockerfile: Dockerfile
+    image: statement:0.0.1
+    expose:
+      - 9002
+    networks:
+      - main-network
+
+  dossier:
+    container_name: dossier
+    build:
+      context: Dossier
+      dockerfile: Dockerfile
+    image: dossier:0.0.1
+    expose:
+      - 9003
+    networks:
+      - main-network
+
+  gateway:
+    container_name: gateway
+    build:
+      context: Gateway
+      dockerfile: Dockerfile
+    image: gateway:0.0.1
+    ports:
+      - 9004:9004
+    networks:
+      - main-network
+
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
     container_name: zookeeper
@@ -6,22 +84,33 @@ services:
       ZOOKEEPER_SERVER_ID: 1
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
-    ports:
-      - "22181:2181"
+    networks:
+      - main-network
+    expose:
+      - 2181
 
   broker:
     image: confluentinc/cp-kafka:latest
     container_name: broker
-    ports:
-      - "9092:9092"
+    expose:
+      - 9092
     depends_on:
       - zookeeper
+    networks:
+      - main-network
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+
+networks:
+  main-network:
+    driver: bridge
+
+volumes:
+  db-data:
