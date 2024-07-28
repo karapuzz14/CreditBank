@@ -38,7 +38,7 @@ jobs:
         uses: codecov/codecov-action@v4.0.1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-# test8
+# test9
 #      - name: SonarCloud
 #        run: mvn -B verify sonar:sonar -Dsonar.projectKey=karapuzz14_creditbank -Dsonar.organization=karapuzz14-github -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_TOKEN
 #        env:
