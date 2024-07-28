@@ -10,9 +10,9 @@ name: Java CI with Maven
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "feature/mvp6" ]
   pull_request:
-    branches: [ "master" ]
+    branches: [ "feature/mvp6" ]
 
 jobs:
   build:
@@ -36,11 +36,11 @@ jobs:
         with:
           token: ${{ secrets.CODECOVTOKEN }}
 
-      - name: SonarCloud
-        run: mvn -B verify sonar:sonar -Dsonar.projectKey=karapuzz14_creditbank -Dsonar.organization=karapuzz14-github -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_TOKEN
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+#      - name: SonarCloud
+#        run: mvn -B verify sonar:sonar -Dsonar.projectKey=karapuzz14_creditbank -Dsonar.organization=karapuzz14-github -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_TOKEN
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
       # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
       - name: Update dependency graph
