@@ -78,6 +78,7 @@
                 <configuration>
                     <includes>
                         <include>**/*ServiceTest.java</include>
+                        <include>**/*MapperTest.java</include>
                     </includes>
                 </configuration>
             </plugin>
