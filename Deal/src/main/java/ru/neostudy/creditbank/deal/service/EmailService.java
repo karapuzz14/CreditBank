@@ -34,6 +34,11 @@ public class EmailService {
   private final KafkaTemplate<String, EmailMessage> emailKafkaTemplate;
   private final KafkaTemplate<String, EmailMessage> fileKafkaTemplate;
 
+  private final Random rand = new Random();
+  private static final String DATE_PATTERN = "dd.MM.yyyy";
+  private static final String DOC_CURRENCY = " руб.\n";
+  private static final String TERM_UNIT = " мес.\n";
+
   public void sendDocuments(String topic, String statementId, ApplicationStatus status) {
     Statement statement = statementRepository.getByStatementId(UUID.fromString(statementId));
 
@@ -50,14 +55,12 @@ public class EmailService {
     log.debug("Сформирован текст документов по заявке {}", statementId);
 
     fileKafkaTemplate.send(topic, message);
-    log.debug("Отправлено сообщение в МС-Dossier через Kafka по теме {}: {}",
-        topic, message.toString());
+    logMessageSent(topic, message.toString());
   }
 
   public void sendCode(String topic, String statementId) {
     Statement statement = statementRepository.getByStatementId(UUID.fromString(statementId));
 
-    Random rand = new Random();
     int codeNumber = rand.nextInt(0, 9999);
     String code = String.format("%04d", codeNumber);
 
@@ -73,8 +76,7 @@ public class EmailService {
         .build();
 
     emailKafkaTemplate.send(topic, message);
-    log.debug("Отправлено сообщение в МС-Dossier через Kafka по теме {}: {}",
-        topic, message.toString());
+    logMessageSent(topic, message.toString());
   }
 
   public void sendCreditIssuedMessage(String topic, String statementId, String code) {
@@ -102,8 +104,7 @@ public class EmailService {
           .build();
 
       emailKafkaTemplate.send(topic, message);
-      log.debug("Отправлено сообщение в МС-Dossier через Kafka по теме {}: {}",
-          topic, message.toString());
+      logMessageSent(topic, message.toString());
     }
   }
 
@@ -148,7 +149,7 @@ public class EmailService {
         + client.getFirstName() + " "
         + client.getMiddleName() + "\n";
     clientInfo +=
-        "Дата рождения: " + client.getBirthdate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))
+        "Дата рождения: " + client.getBirthdate().format(DateTimeFormatter.ofPattern(DATE_PATTERN))
             + "\n";
     clientInfo += "Адрес эл. почты: " + client.getEmail() + "\n";
     clientInfo += "Пол: " + client.getGender().getDocName() + "\n";
@@ -160,18 +161,18 @@ public class EmailService {
     clientInfo += "Номер: " + passport.getNumber() + "\n";
     clientInfo += "Серия: " + passport.getSeries() + "\n";
     clientInfo +=
-        "Дата выдачи: " + passport.getIssueDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))
+        "Дата выдачи: " + passport.getIssueDate().format(DateTimeFormatter.ofPattern(DATE_PATTERN))
             + "\n";
     clientInfo += "Код подразделения: " + passport.getIssueBranch() + "\n";
 
     clientInfo += "Информация о трудоустройстве.\n";
     EmploymentDto employment = client.getEmployment();
-    clientInfo += "Заработная плата: " + employment.getSalary() + " руб." + "\n";
+    clientInfo += "Заработная плата: " + employment.getSalary() + DOC_CURRENCY;
     clientInfo += "Характер должности: " + employment.getPosition().getDocName() + "\n";
     clientInfo += "ИНН работодателя: " + employment.getEmployerINN() + "\n";
     clientInfo += "Статус трудоустройства: " + employment.getEmploymentStatus().getDocName() + "\n";
-    clientInfo += "Общий опыт работы: " + employment.getWorkExperienceTotal() + " мес.\n";
-    clientInfo += "Текущий опыт работы: " + employment.getWorkExperienceCurrent() + " мес.\n";
+    clientInfo += "Общий опыт работы: " + employment.getWorkExperienceTotal() + TERM_UNIT;
+    clientInfo += "Текущий опыт работы: " + employment.getWorkExperienceCurrent() + TERM_UNIT;
 
     return clientInfo;
   }
@@ -179,11 +180,11 @@ public class EmailService {
   private String getCreditInfo(Credit credit) {
     String creditInfo = "2. Информация о кредите.\n";
 
-    creditInfo += "Сумма кредита: " + credit.getAmount() + " руб.\n";
-    creditInfo += "Срок: " + credit.getTerm() + " мес.\n";
-    creditInfo += "Ежемесячный платёж: " + credit.getMonthlyPayment() + " руб.\n";
+    creditInfo += "Сумма кредита: " + credit.getAmount() + DOC_CURRENCY;
+    creditInfo += "Срок: " + credit.getTerm() + TERM_UNIT;
+    creditInfo += "Ежемесячный платёж: " + credit.getMonthlyPayment() + DOC_CURRENCY;
     creditInfo += "Ставка: " + credit.getRate().multiply(new BigDecimal(100)) + "%\n";
-    creditInfo += "Полная сумма кредита: " + credit.getPsk() + " руб.\n";
+    creditInfo += "Полная сумма кредита: " + credit.getPsk() + DOC_CURRENCY;
 
     return creditInfo;
   }
@@ -195,11 +196,11 @@ public class EmailService {
     for (PaymentScheduleElementDto element : schedule) {
       paymentSchedule += element.getNumber() + "-й платёж.\n";
       paymentSchedule +=
-          "Дата платежа: " + element.getDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))
+          "Дата платежа: " + element.getDate().format(DateTimeFormatter.ofPattern(DATE_PATTERN))
               + "\n";
-      paymentSchedule += "Общий размер платежа: " + element.getTotalPayment() + " руб.\n";
-      paymentSchedule += "Платеж по телу кредита: " + element.getDebtPayment() + " руб.\n";
-      paymentSchedule += "Платеж по процентам: " + element.getInterestPayment() + " руб.\n";
+      paymentSchedule += "Общий размер платежа: " + element.getTotalPayment() + DOC_CURRENCY;
+      paymentSchedule += "Платеж по телу кредита: " + element.getDebtPayment() + DOC_CURRENCY;
+      paymentSchedule += "Платеж по процентам: " + element.getInterestPayment() + DOC_CURRENCY;
       paymentSchedule += "Остаток долга: " + element.getRemainingDebt() + " руб.\n\n";
     }
 
@@ -218,15 +219,20 @@ public class EmailService {
         + client.getMiddleName() + "\n";
     application += "Адрес эл. почты: " + client.getEmail() + "\n";
     application +=
-        "Дата рождения: " + client.getBirthdate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))
+        "Дата рождения: " + client.getBirthdate().format(DateTimeFormatter.ofPattern(DATE_PATTERN))
             + "\n";
 
     Passport passport = client.getPassport();
     application += "Номер паспорта: " + passport.getNumber() + "\n";
     application += "Серия паспорта: " + passport.getSeries() + "\n";
-    application += "Сумма кредита: " + credit.getAmount() + " руб.\n";
-    application += "Срок по кредиту: " + credit.getTerm() + " мес.\n";
+    application += "Сумма кредита: " + credit.getAmount() + DOC_CURRENCY;
+    application += "Срок по кредиту: " + credit.getTerm() + TERM_UNIT;
 
     return application;
+  }
+
+  private void logMessageSent(String topic, String message) {
+    log.debug("Отправлено сообщение в МС-Dossier через Kafka по теме {}: {}",
+        topic, message);
   }
 }
