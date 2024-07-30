@@ -22,37 +22,37 @@ import ru.neostudy.creditbank.gateway.enums.MaritalStatus;
 public class FinishRegistrationRequestDto {
 
   @NotNull
-  @Schema(description = "Пол клиента", required = true)
+  @Schema(description = "Пол клиента", requiredMode = Schema.RequiredMode.REQUIRED)
   private Gender gender;
 
   @NotNull
-  @Schema(description = "Семейное положение клиента", required = true)
+  @Schema(description = "Семейное положение клиента", requiredMode = Schema.RequiredMode.REQUIRED)
   private MaritalStatus maritalStatus;
 
   @NotNull
-  @Schema(description = "Количество иждивенцев на попечении клиента", required = true, example = "1")
+  @Schema(description = "Количество иждивенцев на попечении клиента", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
   private Integer dependentAmount;
 
   @NotNull
   @PastOrPresent
-  @Schema(description = "Дата выдачи паспорта клиента", required = true, example = "2000-09-20")
+  @Schema(description = "Дата выдачи паспорта клиента", requiredMode = Schema.RequiredMode.REQUIRED, example = "2000-09-20")
   private LocalDate passportIssueDate;
 
   @NotNull
   @Pattern(regexp = "\\d{3}-\\d{3}",
       message = "Код подразделения состоит из 6 цифр в формате XXX-XXX.")
-  @Schema(description = "Код подразделения, где был выдан паспорт клиента", required = true,
+  @Schema(description = "Код подразделения, где был выдан паспорт клиента", requiredMode = Schema.RequiredMode.REQUIRED,
       example = "560-400")
   private String passportIssueBranch;
 
   @NotNull
   @Valid
-  @Schema(description = "Данные о работе клиента", required = true)
+  @Schema(description = "Данные о работе клиента", requiredMode = Schema.RequiredMode.REQUIRED)
   private EmploymentDto employmentDto;
 
   @NotNull
   @Size(min = 20, max = 20, message = "Номер счёта состоит из 20 цифр.")
-  @Schema(description = "Номер счёта клиента", required = true, example = "40802810064580000000")
+  @Schema(description = "Номер счёта клиента", requiredMode = Schema.RequiredMode.REQUIRED, example = "40802810064580000000")
   private String accountNumber;
 
 }

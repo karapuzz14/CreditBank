@@ -28,33 +28,33 @@ public class LoanOfferDto {
   @NotNull
   @DecimalMax(value = "30000000", message = "Сумма кредита не может превышать 30 млн. рублей.")
   @DecimalMin(value = "30000", message = "Сумма кредита не может быть ниже 30 тыс. рублей.")
-  @Schema(description = "Сумма кредита", required = true, example = "90000.00")
+  @Schema(description = "Сумма кредита", requiredMode = Schema.RequiredMode.REQUIRED, example = "90000.00")
   private BigDecimal requestedAmount;
 
   @NotNull
-  @Schema(description = "Полная стоимость кредита", required = true, example = "100000.00")
+  @Schema(description = "Полная стоимость кредита", requiredMode = Schema.RequiredMode.REQUIRED, example = "100000.00")
   private BigDecimal totalAmount;
 
   @Max(value = 84, message = "Максимальный срок кредита - 7 лет.")
   @Min(value = 6, message = "Минимальный срок кредита - 6 месяцев.")
   @NotNull
-  @Schema(description = "Срок кредита (мес.)", required = true, example = "24")
+  @Schema(description = "Срок кредита (мес.)", requiredMode = Schema.RequiredMode.REQUIRED, example = "24")
   private Integer term;
 
   @NotNull
-  @Schema(description = "Размер ежемесячной выплаты по кредиту", required = true, example = "9000.20")
+  @Schema(description = "Размер ежемесячной выплаты по кредиту", requiredMode = Schema.RequiredMode.REQUIRED, example = "9000.20")
   private BigDecimal monthlyPayment;
 
   @NotNull
-  @Schema(description = "Процентная ставка по кредиту", required = true, example = "0.20")
+  @Schema(description = "Процентная ставка по кредиту", requiredMode = Schema.RequiredMode.REQUIRED, example = "0.20")
   private BigDecimal rate;
 
   @NotNull
-  @Schema(description = "Наличие страховки по кредиту", required = true, example = "true")
+  @Schema(description = "Наличие страховки по кредиту", requiredMode = Schema.RequiredMode.REQUIRED, example = "true")
   private Boolean isInsuranceEnabled;
 
   @NotNull
-  @Schema(description = "Наличие статуса зарплатного клиента", required = true, example = "false")
+  @Schema(description = "Наличие статуса зарплатного клиента", requiredMode = Schema.RequiredMode.REQUIRED, example = "false")
   private Boolean isSalaryClient;
 
 }
