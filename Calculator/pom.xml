@@ -30,6 +30,9 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <imageName>calculator:0.0.1-SNAPSHOT</imageName>
+                </configuration>
             </plugin>
         </plugins>
     </build>

@@ -5,7 +5,7 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: <example@gmail.com>
+    username: <email_address>
     password: <application_password>
     properties:
       mail.smtp:
@@ -19,9 +19,9 @@ spring:
       client:
         config:
           deal:
-            url: http://localhost:9001/deal
+            url: http://deal:9001/deal
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: broker:9092
   application:
     name: Dossier
 server:

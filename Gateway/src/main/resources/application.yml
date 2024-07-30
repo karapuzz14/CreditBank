@@ -7,9 +7,9 @@ spring:
       client:
         config:
           deal:
-            url: http://localhost:9001/deal
+            url: http://deal:9001/deal
           statement:
-            url: http://localhost:9002/statement
+            url: http://statement:9002/statement
   application:
     name: Gateway
 server:
