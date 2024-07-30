@@ -38,7 +38,7 @@ public class EmailService {
   private final SpringTemplateEngine templateEngine;
   private final DealClient dealClient;
 
-  private static final String emailEncoding = "UTF-8";
+  private static final String EMAIL_ENCODING = "UTF-8";
 
   public void sendFinishRegistrationEmail(EmailMessage message) {
 
@@ -56,7 +56,7 @@ public class EmailService {
 
     MimeMessage emailMessage = emailSender.createMimeMessage();
 
-    MimeMessageHelper helper = new MimeMessageHelper(emailMessage, true, emailEncoding);
+    MimeMessageHelper helper = new MimeMessageHelper(emailMessage, true, EMAIL_ENCODING);
     helper.setTo(message.getAddress());
     helper.setSubject("Ваша заявка на кредит одобрена");
 
@@ -90,7 +90,7 @@ public class EmailService {
       throws MessagingException, IOException, DefaultException {
 
     MimeMessage emailMessage = emailSender.createMimeMessage();
-    MimeMessageHelper helper = new MimeMessageHelper(emailMessage, true, emailEncoding);
+    MimeMessageHelper helper = new MimeMessageHelper(emailMessage, true, EMAIL_ENCODING);
 
     helper.setTo(message.getAddress());
     helper.setSubject("Документы по кредиту");
@@ -134,7 +134,7 @@ public class EmailService {
   public void sendSignDocumentsEmail(EmailMessage message) throws MessagingException {
     MimeMessage emailMessage = emailSender.createMimeMessage();
 
-    MimeMessageHelper helper = new MimeMessageHelper(emailMessage, true, emailEncoding);
+    MimeMessageHelper helper = new MimeMessageHelper(emailMessage, true, EMAIL_ENCODING);
     helper.setTo(message.getAddress());
     helper.setSubject("Подтверждение подписи");
 
