@@ -38,7 +38,7 @@ public class EmailService {
   private final SpringTemplateEngine templateEngine;
   private final DealClient dealClient;
 
-  private final String emailEncoding = "UTF-8";
+  private static final String emailEncoding = "UTF-8";
 
   public void sendFinishRegistrationEmail(EmailMessage message) {
 

@@ -35,9 +35,9 @@ public class EmailService {
   private final KafkaTemplate<String, EmailMessage> fileKafkaTemplate;
 
   private final Random rand = new Random();
-  private final String datePattern = "dd.MM.yyyy";
-  private final String docCurrency = " руб.\n";
-  private final String termUnit = " мес.\n";
+  private static final String datePattern = "dd.MM.yyyy";
+  private static final String docCurrency = " руб.\n";
+  private static final String termUnit = " мес.\n";
 
   public void sendDocuments(String topic, String statementId, ApplicationStatus status) {
     Statement statement = statementRepository.getByStatementId(UUID.fromString(statementId));
