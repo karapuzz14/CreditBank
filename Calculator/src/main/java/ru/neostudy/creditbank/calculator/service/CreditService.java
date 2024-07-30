@@ -46,20 +46,20 @@ public class CreditService {
 
     int term = scoringDataDto.getTerm();
     BigDecimal requestedAmount = scoringDataDto.getAmount();
-    BigDecimal rate = calculateScoredRate(scoringDataDto);
+    BigDecimal scoredRate = calculateScoredRate(scoringDataDto);
     log.debug(
         "Расчёт условий кредита: сумма кредита {}, ставка {}, срок {} мес.",
-        requestedAmount, rate, term);
+        requestedAmount, scoredRate, term);
 
     OfferService offerService = new OfferService();
-    BigDecimal monthlyPayment = offerService.calculateMonthlyPayment(rate, requestedAmount, term);
+    BigDecimal monthlyPayment = offerService.calculateMonthlyPayment(scoredRate, requestedAmount, term);
     log.debug("Ежемесячный платёж рассчитан: {}", monthlyPayment);
 
-    BigDecimal psk = offerService.calculatePsk(requestedAmount, monthlyPayment, rate);
+    BigDecimal psk = offerService.calculatePsk(requestedAmount, monthlyPayment, scoredRate);
     log.debug("Полная стоимость кредита рассчитана: {}", psk);
 
     List<PaymentScheduleElementDto> schedule = createSchedule(requestedAmount, monthlyPayment,
-        rate);
+        scoredRate);
     log.debug("Расписание платежей рассчитано за период {}/{}, ",
         schedule.get(0).getDate(),
         schedule.get(term - 1).getDate());
@@ -70,7 +70,7 @@ public class CreditService {
         .paymentSchedule(schedule)
         .monthlyPayment(monthlyPayment)
         .psk(psk)
-        .rate(rate)
+        .rate(scoredRate)
         .term(term)
         .amount(scoringDataDto.getAmount())
         .isInsuranceEnabled(scoringDataDto.getIsInsuranceEnabled())

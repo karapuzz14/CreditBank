@@ -6,6 +6,7 @@ import jakarta.mail.internet.MimeMessage;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +38,8 @@ public class EmailService {
   private final SpringTemplateEngine templateEngine;
   private final DealClient dealClient;
 
+  private final String emailEncoding = "UTF-8";
+
   public void sendFinishRegistrationEmail(EmailMessage message) {
 
     SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
@@ -53,7 +56,7 @@ public class EmailService {
 
     MimeMessage emailMessage = emailSender.createMimeMessage();
 
-    MimeMessageHelper helper = new MimeMessageHelper(emailMessage, true, "UTF-8");
+    MimeMessageHelper helper = new MimeMessageHelper(emailMessage, true, emailEncoding);
     helper.setTo(message.getAddress());
     helper.setSubject("Ваша заявка на кредит одобрена");
 
@@ -87,7 +90,7 @@ public class EmailService {
       throws MessagingException, IOException, DefaultException {
 
     MimeMessage emailMessage = emailSender.createMimeMessage();
-    MimeMessageHelper helper = new MimeMessageHelper(emailMessage, true, "UTF-8");
+    MimeMessageHelper helper = new MimeMessageHelper(emailMessage, true, emailEncoding);
 
     helper.setTo(message.getAddress());
     helper.setSubject("Документы по кредиту");
@@ -123,7 +126,7 @@ public class EmailService {
     log.debug("Отправлен запрос на изменение статуса заявки {} на DOCUMENTS_CREATED", statementId);
 
     for(File file : filesToDelete) {
-      file.delete();
+      Files.delete(file.toPath());
       log.debug("Удален временный файл документа {} по заявке {}", file.getName(), statementId);
     }
   }
@@ -131,7 +134,7 @@ public class EmailService {
   public void sendSignDocumentsEmail(EmailMessage message) throws MessagingException {
     MimeMessage emailMessage = emailSender.createMimeMessage();
 
-    MimeMessageHelper helper = new MimeMessageHelper(emailMessage, true, "UTF-8");
+    MimeMessageHelper helper = new MimeMessageHelper(emailMessage, true, emailEncoding);
     helper.setTo(message.getAddress());
     helper.setSubject("Подтверждение подписи");
 

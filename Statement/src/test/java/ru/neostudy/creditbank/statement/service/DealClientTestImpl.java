@@ -27,5 +27,7 @@ public class DealClientTestImpl implements DealClient {
   }
 
   @Override
-  public void selectOffer(LoanOfferDto loanOfferDto) {}
+  public void selectOffer(LoanOfferDto loanOfferDto) {
+    // для интеграционного теста логика void-метода не имеет значения
+  }
 }
