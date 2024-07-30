@@ -18,7 +18,7 @@ public interface Statement {
           + " в зависимости от наличия страховки кредита и наличия у пользователя статуса зарплатного клиента."
   )
   List<LoanOfferDto> calculateLoanOffers(
-      @Valid @RequestBody @Parameter(description = "Заявка на кредит", required = true)
+      @Valid @RequestBody @Parameter(description = "Заявка на кредит")
       LoanStatementRequestDto loanStatementRequestDto)
       throws LaterBirthdateException, DefaultException;
 
@@ -27,6 +27,6 @@ public interface Statement {
       description = "Осуществляет выбор кредитного предложения через Deal API."
   )
   void selectOffer(
-      @Valid @RequestBody @Parameter(description = "Выбранное кредитное предложение", required = true)
+      @Valid @RequestBody @Parameter(description = "Выбранное кредитное предложение")
       LoanOfferDto loanOfferDto) throws DefaultException;
 }

@@ -18,7 +18,7 @@ public interface Gateway {
           + " в зависимости от наличия страховки кредита и наличия у пользователя статуса зарплатного клиента."
   )
   List<LoanOfferDto> calculateLoanOffers(
-      @RequestBody @Parameter(description = "Заявка на кредит", required = true)
+      @RequestBody @Parameter(description = "Заявка на кредит")
       LoanStatementRequestDto loanStatementRequestDto)
       throws DefaultException;
 
@@ -27,7 +27,7 @@ public interface Gateway {
       description = "Осуществляет выбор кредитного предложения через Statement API."
   )
   void selectOffer(
-      @RequestBody @Parameter(description = "Выбранное кредитное предложение", required = true)
+      @RequestBody @Parameter(description = "Выбранное кредитное предложение")
       LoanOfferDto loanOfferDto) throws DefaultException;
 
   @Operation(
@@ -35,7 +35,7 @@ public interface Gateway {
       description = "Сохраняет в БД полные данные о клиенте и вычисленные данные итогового кредитного предложения через Deal API."
   )
   void finishRegistration(
-      @RequestBody @Parameter(description = "Запрос на расчёт выбранного кредитного предложения", required = true)
+      @RequestBody @Parameter(description = "Запрос на расчёт выбранного кредитного предложения")
       FinishRegistrationRequestDto finishRegistrationRequestDto,
       String statementId) throws DefaultException;
 
@@ -45,7 +45,7 @@ public interface Gateway {
           + "Изменяет статус заявки на PREPARE_DOCUMENTS."
   )
   void sendDocuments(
-      @Parameter(description = "Идентификатор заявки", required = true) String statementId)
+      @Parameter(description = "Идентификатор заявки") String statementId)
       throws DefaultException;
 
   @Operation(
@@ -56,8 +56,8 @@ public interface Gateway {
           + "Сохраняет в БД код подтверждения для соответствующей заявки."
   )
   void signDocuments(
-      @Parameter(description = "Согласие/отказ клиента в подписании документов", required = true) Boolean isAccepted,
-      @Parameter(description = "Идентификатор заявки", required = true) String statementId)
+      @Parameter(description = "Согласие/отказ клиента в подписании документов") Boolean isAccepted,
+      @Parameter(description = "Идентификатор заявки") String statementId)
       throws DefaultException;
 
   @Operation(
@@ -68,7 +68,7 @@ public interface Gateway {
   )
   void sendCodeVerification(
       @Parameter(description = "Код подтверждения") String code,
-      @Parameter(description = "Идентификатор заявки", required = true) String statementId)
+      @Parameter(description = "Идентификатор заявки") String statementId)
       throws DefaultException;
 
   @Operation(
@@ -76,7 +76,7 @@ public interface Gateway {
       description = "Возвращает заявку по её идентификатору. Функция администратора."
   )
   Statement getStatementById(
-      @Parameter(description = "Идентификатор заявки", required = true) String statementId)
+      @Parameter(description = "Идентификатор заявки") String statementId)
       throws DefaultException;
 
   @Operation(

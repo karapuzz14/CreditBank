@@ -19,7 +19,7 @@ public interface Calculate {
           + "от наличия страховки кредита и наличия у пользователя статуса зарплатного клиента."
   )
   List<LoanOfferDto> calculateLoanOffers(
-      @Valid @RequestBody @Parameter(description = "Заявка на кредит", required = true)
+      @Valid @RequestBody @Parameter(description = "Заявка на кредит")
       LoanStatementRequestDto loanStatementRequestDto);
 
   @Operation(
@@ -27,6 +27,6 @@ public interface Calculate {
       description = "Производит скоринг пользователя и рассчитывает полные условия кредита. "
   )
   CreditDto calculateCreditOffer(
-      @Valid @RequestBody @Parameter(description = "Данные, необходимые для скоринга", required = true)
+      @Valid @RequestBody @Parameter(description = "Данные, необходимые для скоринга")
       ScoringDataDto scoringDataDto) throws DeniedException;
 }

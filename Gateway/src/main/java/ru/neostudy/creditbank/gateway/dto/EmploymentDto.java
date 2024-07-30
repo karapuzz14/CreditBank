@@ -20,29 +20,29 @@ import ru.neostudy.creditbank.gateway.enums.Position;
 public class EmploymentDto {
 
   @NotNull
-  @Schema(description = "Статус трудоустройства", required = true)
+  @Schema(description = "Статус трудоустройства", requiredMode = Schema.RequiredMode.REQUIRED)
   private EmploymentStatus employmentStatus;
 
   @NotNull
   @Pattern(regexp = "\\d{10,12}", message = "Некорректный ИНН.")
-  @Schema(description = "ИНН работодателя", required = true, example = "1024555125")
+  @Schema(description = "ИНН работодателя", requiredMode = Schema.RequiredMode.REQUIRED, example = "1024555125")
   private String employerINN;
 
   @NotNull
-  @Schema(description = "Размер заработной платы", required = true, example = "10000.00")
+  @Schema(description = "Размер заработной платы", requiredMode = Schema.RequiredMode.REQUIRED, example = "10000.00")
   private BigDecimal salary;
 
   @NotNull
-  @Schema(description = "Должность", required = true)
+  @Schema(description = "Должность", requiredMode = Schema.RequiredMode.REQUIRED)
   private Position position;
 
   @NotNull
   @PositiveOrZero
-  @Schema(description = "Общий стаж работы", required = true, example = "48")
+  @Schema(description = "Общий стаж работы", requiredMode = Schema.RequiredMode.REQUIRED, example = "48")
   private Integer workExperienceTotal;
 
   @NotNull
   @PositiveOrZero
-  @Schema(description = "Текущий стаж работы", required = true, example = "36")
+  @Schema(description = "Текущий стаж работы", requiredMode = Schema.RequiredMode.REQUIRED, example = "36")
   private Integer workExperienceCurrent;
 }

@@ -21,7 +21,7 @@ public interface Deal {
               + "возвращает 4 возможных варианта условий кредита от худшего к лучшему."
   )
   List<LoanOfferDto> createLoanOffers(
-      @Valid @RequestBody @Parameter(description = "Запрос на создание заявки на кредит", required = true)
+      @Valid @RequestBody @Parameter(description = "Запрос на создание заявки на кредит")
       LoanStatementRequestDto loanStatementRequestDto) throws DefaultException;
 
   @Operation(
@@ -29,7 +29,7 @@ public interface Deal {
       description = "Сохраняет данные о выбранном кредитном предложении в поле заявки на кредит."
   )
   void selectOffer(
-      @Valid @RequestBody @Parameter(description = "Выбранное кредитное предложение", required = true)
+      @Valid @RequestBody @Parameter(description = "Выбранное кредитное предложение")
       LoanOfferDto loanOfferDto);
 
   @Operation(
@@ -37,7 +37,7 @@ public interface Deal {
       description = "Сохраняет в БД полные данные о клиенте и вычисленные данные итогового кредитного предложения."
   )
   void finishRegistration(
-      @Valid @RequestBody @Parameter(description = "Запрос на расчёт выбранного кредитного предложения", required = true)
+      @Valid @RequestBody @Parameter(description = "Запрос на расчёт выбранного кредитного предложения")
       FinishRegistrationRequestDto finishRegistrationRequestDto,
       String statementId) throws DeniedException, DefaultException;
 
@@ -48,14 +48,14 @@ public interface Deal {
           + "Изменяет статус заявки на PREPARE_DOCUMENTS."
   )
   void sendDocuments(
-      @Parameter(description = "Идентификатор заявки", required = true) String statementId);
+      @Parameter(description = "Идентификатор заявки") String statementId);
 
   @Operation(
       summary = "Обновление статуса заявки",
       description = "Изменяет статус заявки на DOCUMENTS_CREATED после отправки письма с документами в МС-Dossier."
   )
   void changeStatusOnDocumentsCreated(
-      @Parameter(description = "Идентификатор заявки", required = true) String statementId);
+      @Parameter(description = "Идентификатор заявки") String statementId);
 
   @Operation(
       summary = "Подписание документов",
@@ -65,8 +65,8 @@ public interface Deal {
           + "Сохраняет в БД код подтверждения для соответствующей заявки."
   )
   void signDocuments(
-      @Parameter(description = "Согласие/отказ клиента в подписании документов", required = true) Boolean isAccepted,
-      @Parameter(description = "Идентификатор заявки", required = true) String statementId);
+      @Parameter(description = "Согласие/отказ клиента в подписании документов") Boolean isAccepted,
+      @Parameter(description = "Идентификатор заявки") String statementId);
 
 
   @Operation(
@@ -77,7 +77,7 @@ public interface Deal {
   )
   void sendCodeVerification(
       @Parameter(description = "Код подтверждения") String code,
-      @Parameter(description = "Идентификатор заявки", required = true) String statementId);
+      @Parameter(description = "Идентификатор заявки") String statementId);
 
 
   @Operation(
@@ -85,7 +85,7 @@ public interface Deal {
       description = "Возвращает заявку по её идентификатору. Функция администратора."
   )
   Statement getStatementById(
-      @Parameter(description = "Идентификатор заявки", required = true) String statementId);
+      @Parameter(description = "Идентификатор заявки") String statementId);
 
   @Operation(
       summary = "Получение всех заявок",
